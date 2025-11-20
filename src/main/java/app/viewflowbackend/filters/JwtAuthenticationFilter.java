@@ -1,7 +1,7 @@
 package app.viewflowbackend.filters;
 
 import app.viewflowbackend.services.security.JwtService;
-import app.viewflowbackend.services.UserService;
+import app.viewflowbackend.services.security.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

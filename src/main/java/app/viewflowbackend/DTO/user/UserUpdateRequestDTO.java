@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserUpdateRequestDTO {
 
-    private String username;
-
     private String avatarUrl;
 
     private String bio;

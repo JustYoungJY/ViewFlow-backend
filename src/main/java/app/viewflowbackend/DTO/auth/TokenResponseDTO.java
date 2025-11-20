@@ -1,4 +1,5 @@
-package app.viewflowbackend.DTO.user;
+package app.viewflowbackend.DTO.auth;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,12 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegisterRequestDTO {
+public class TokenResponseDTO {
 
-    private String username;
+    private String accessToken;
 
-    private String email;
+    private String refreshToken;
 
-    private String password;
-
+    private Long expiresIn;
 }

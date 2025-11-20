@@ -1,4 +1,4 @@
-package app.viewflowbackend.handler;
+package app.viewflowbackend.handlers;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

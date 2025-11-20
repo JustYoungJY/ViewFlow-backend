@@ -1,16 +1,17 @@
-package app.viewflowbackend.services;
+package app.viewflowbackend.services.security;
 
-import app.viewflowbackend.DTO.auth.LoginRequest;
-import app.viewflowbackend.DTO.auth.RegisterRequest;
-import app.viewflowbackend.DTO.auth.TokenResponse;
+import app.viewflowbackend.DTO.auth.LoginRequestDTO;
+import app.viewflowbackend.DTO.auth.RegisterRequestDTO;
+import app.viewflowbackend.DTO.auth.TokenResponseDTO;
+import app.viewflowbackend.DTO.user.UserUpdateRequestDTO;
 import app.viewflowbackend.enums.Role;
+import app.viewflowbackend.exceptions.EmailAlreadyExistsException;
+import app.viewflowbackend.exceptions.InvalidPasswordException;
+import app.viewflowbackend.exceptions.UserNotFoundException;
+import app.viewflowbackend.exceptions.UsernameAlreadyExistsException;
 import app.viewflowbackend.models.basic.Viewer;
 import app.viewflowbackend.repositories.UserRepository;
-import app.viewflowbackend.services.security.JwtService;
-import app.viewflowbackend.services.security.RefreshTokenService;
-import app.viewflowbackend.services.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -38,12 +40,12 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public TokenResponse register(RegisterRequest request) {
+    public TokenResponseDTO register(RegisterRequestDTO request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username is already exists");
+            throw new UsernameAlreadyExistsException(request.getUsername());
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email is already exists");
+            throw new EmailAlreadyExistsException(request.getEmail());
         }
 
         Viewer viewer = Viewer
@@ -62,7 +64,7 @@ public class UserService implements UserDetailsService {
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = refreshTokenService.createRefreshToken(viewer.getId());
 
-        return TokenResponse
+        return TokenResponseDTO
                 .builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -71,10 +73,10 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public TokenResponse login(LoginRequest request) {
-        UserDetails userDetails = loadUserByUsername(request.getEmail());
+    public TokenResponseDTO login(LoginRequestDTO request) {
+        UserDetails userDetails = loadUserByUsername(request.getUsername());
         if (!passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidPasswordException();
         }
 
         UserDetailsImpl user = (UserDetailsImpl) userDetails;
@@ -82,7 +84,7 @@ public class UserService implements UserDetailsService {
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = refreshTokenService.createRefreshToken(viewer.getId());
-        return TokenResponse
+        return TokenResponseDTO
                 .builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -92,11 +94,11 @@ public class UserService implements UserDetailsService {
 
 
     @Transactional
-    public TokenResponse refresh(String refreshToken) {
+    public TokenResponseDTO refresh(String refreshToken) {
         Long userId = refreshTokenService.exctractUserIdFromRefreshToken(refreshToken);
         refreshTokenService.verifyRefreshToken(refreshToken, userId);
 
-        Viewer viewer = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Viewer viewer = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         UserDetailsImpl userDetails = new UserDetailsImpl(viewer);
 
         String accessToken = jwtService.generateAccessToken(userDetails);
@@ -104,7 +106,7 @@ public class UserService implements UserDetailsService {
 
         refreshTokenService.deleteRefreshToken(refreshToken);
 
-        return TokenResponse
+        return TokenResponseDTO
                 .builder()
                 .accessToken(accessToken)
                 .refreshToken(newRefreshToken)
@@ -114,16 +116,24 @@ public class UserService implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Viewer viewer = userRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Viewer viewer = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new UserDetailsImpl(viewer);
     }
 
-    public Viewer getCurrentUser() {
-        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-        return userDetailsImpl.getViewer();
+    @Transactional
+    public void updateProfile(Viewer viewer, UserUpdateRequestDTO request) {
+        Optional.ofNullable(request.getAvatarUrl()).ifPresent(viewer::setAvatarUrl);
+        Optional.ofNullable(request.getBio()).ifPresent(viewer::setBio);
+
+        userRepository.save(viewer);
     }
+
+//    public Viewer getCurrentUser() {
+//        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) SecurityContextHolder.getContext()
+//                .getAuthentication().getPrincipal();
+//        return userDetailsImpl.getViewer();
+//    }
 
 }

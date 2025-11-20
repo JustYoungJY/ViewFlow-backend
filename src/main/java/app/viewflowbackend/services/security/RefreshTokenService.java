@@ -1,5 +1,6 @@
 package app.viewflowbackend.services.security;
 
+import app.viewflowbackend.exceptions.InvalidRefreshTokenException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class RefreshTokenService {
     public void verifyRefreshToken(String refreshToken, Long expectedUserId) {
         Long userId = refreshTokens.get(refreshToken);
         if (userId == null || !userId.equals(expectedUserId)) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new InvalidRefreshTokenException();
         }
 
     }

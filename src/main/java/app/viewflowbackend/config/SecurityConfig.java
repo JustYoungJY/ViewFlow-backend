@@ -1,7 +1,8 @@
 package app.viewflowbackend.config;
 
 import app.viewflowbackend.filters.JwtAuthenticationFilter;
-import app.viewflowbackend.handler.UnauthorizedEntryPoint;
+import app.viewflowbackend.handlers.CustomAccessDeniedHandler;
+import app.viewflowbackend.handlers.UnauthorizedEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -30,12 +30,15 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UnauthorizedEntryPoint unauthorizedHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Autowired
     public SecurityConfig(@Lazy JwtAuthenticationFilter jwtAuthenticationFilter,
-                          UnauthorizedEntryPoint unauthorizedHandler) {
+                          UnauthorizedEntryPoint unauthorizedHandler,
+                          CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.unauthorizedHandler = unauthorizedHandler;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
 
@@ -45,8 +48,10 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable);
 
-        http.exceptionHandling(handling ->
-                handling.authenticationEntryPoint(unauthorizedHandler));
+        http.exceptionHandling(handling -> handling
+                .authenticationEntryPoint(unauthorizedHandler)
+                .accessDeniedHandler(customAccessDeniedHandler)
+        );
 
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
