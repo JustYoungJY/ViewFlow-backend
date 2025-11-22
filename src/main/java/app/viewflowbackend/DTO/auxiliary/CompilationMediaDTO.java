@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompilationMediaDTO {
-    private Integer mediaId;
+    private Long mediaId;
 
     private MediaType mediaType;
 

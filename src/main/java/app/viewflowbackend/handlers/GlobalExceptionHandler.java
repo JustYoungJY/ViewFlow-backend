@@ -25,4 +25,22 @@ public class GlobalExceptionHandler {
     public ErrorDTO handleInvalidRefreshTokenException(RuntimeException exception) {
         return new ErrorDTO(exception.getMessage(), HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now());
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ErrorDTO handleAccessDeniedException(RuntimeException exception) {
+        return new ErrorDTO(exception.getMessage(), HttpStatus.FORBIDDEN.value(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(AlreadyLikedException.class)
+    public ErrorDTO handleAlreadyLikedException(RuntimeException exception) {
+        return new ErrorDTO(exception.getMessage(), HttpStatus.CONFLICT.value(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler({
+            CompilationNotFoundException.class,
+            MediaNotFoundException.class
+    })
+    public ErrorDTO handleNotFoundException(RuntimeException exception) {
+        return new ErrorDTO(exception.getMessage(), HttpStatus.NOT_FOUND.value(), LocalDateTime.now());
+    }
 }

@@ -3,6 +3,7 @@ package app.viewflowbackend.services.security;
 import app.viewflowbackend.DTO.auth.LoginRequestDTO;
 import app.viewflowbackend.DTO.auth.RegisterRequestDTO;
 import app.viewflowbackend.DTO.auth.TokenResponseDTO;
+import app.viewflowbackend.DTO.user.UserProfileDTO;
 import app.viewflowbackend.DTO.user.UserUpdateRequestDTO;
 import app.viewflowbackend.enums.Role;
 import app.viewflowbackend.exceptions.EmailAlreadyExistsException;
@@ -11,6 +12,7 @@ import app.viewflowbackend.exceptions.UserNotFoundException;
 import app.viewflowbackend.exceptions.UsernameAlreadyExistsException;
 import app.viewflowbackend.models.basic.Viewer;
 import app.viewflowbackend.repositories.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,23 +25,27 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       JwtService jwtService, RefreshTokenService refreshTokenService) {
+                       JwtService jwtService, RefreshTokenService refreshTokenService,
+                       ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.modelMapper = modelMapper;
     }
 
-    @Transactional
+
     public TokenResponseDTO register(RegisterRequestDTO request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new UsernameAlreadyExistsException(request.getUsername());
@@ -72,7 +78,7 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    @Transactional
+
     public TokenResponseDTO login(LoginRequestDTO request) {
         UserDetails userDetails = loadUserByUsername(request.getUsername());
         if (!passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
@@ -93,9 +99,8 @@ public class UserService implements UserDetailsService {
     }
 
 
-    @Transactional
     public TokenResponseDTO refresh(String refreshToken) {
-        Long userId = refreshTokenService.exctractUserIdFromRefreshToken(refreshToken);
+        Long userId = refreshTokenService.extractUserIdFromRefreshToken(refreshToken);
         refreshTokenService.verifyRefreshToken(refreshToken, userId);
 
         Viewer viewer = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
@@ -122,12 +127,17 @@ public class UserService implements UserDetailsService {
         return new UserDetailsImpl(viewer);
     }
 
-    @Transactional
+
     public void updateProfile(Viewer viewer, UserUpdateRequestDTO request) {
         Optional.ofNullable(request.getAvatarUrl()).ifPresent(viewer::setAvatarUrl);
         Optional.ofNullable(request.getBio()).ifPresent(viewer::setBio);
 
         userRepository.save(viewer);
+    }
+
+
+    public UserProfileDTO convertToUserProfileDTO(Viewer viewer) {
+        return modelMapper.map(viewer, UserProfileDTO.class);
     }
 
 //    public Viewer getCurrentUser() {

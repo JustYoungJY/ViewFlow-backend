@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MediaDetailsDTO {
-    private Integer tmdbId;
+    private Long tmdbId;
 
     private MediaType mediaType;
 

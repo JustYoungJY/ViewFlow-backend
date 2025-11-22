@@ -30,7 +30,7 @@ public class RefreshTokenService {
         refreshTokens.remove(refreshToken);
     }
 
-    public Long exctractUserIdFromRefreshToken(String refreshToken) {
+    public Long extractUserIdFromRefreshToken(String refreshToken) {
         return refreshTokens.get(refreshToken);
     }
 

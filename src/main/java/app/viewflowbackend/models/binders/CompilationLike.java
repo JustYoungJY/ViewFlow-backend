@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class CompilationLike {
 
     @EmbeddedId
-    private CompilationLikePK compilationLikePK;
+    private CompilationLikePK id;
 
     @MapsId("compilationId")
     @ManyToOne

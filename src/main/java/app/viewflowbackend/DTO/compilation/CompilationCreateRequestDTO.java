@@ -1,6 +1,6 @@
 package app.viewflowbackend.DTO.compilation;
 
-import app.viewflowbackend.DTO.auxiliary.MediaRefDTO;
+import app.viewflowbackend.DTO.compilationMedia.CompilationMediaAddRequestDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +22,5 @@ public class CompilationCreateRequestDTO {
 
     private Boolean isPublic;
 
-    private List<MediaRefDTO> mediaIds;
+    private List<CompilationMediaAddRequestDTO> mediaList;
 }
