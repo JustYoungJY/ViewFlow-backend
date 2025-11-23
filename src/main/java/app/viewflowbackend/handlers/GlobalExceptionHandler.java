@@ -43,4 +43,9 @@ public class GlobalExceptionHandler {
     public ErrorDTO handleNotFoundException(RuntimeException exception) {
         return new ErrorDTO(exception.getMessage(), HttpStatus.NOT_FOUND.value(), LocalDateTime.now());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorDTO handleIllegalArgumentException(RuntimeException exception) {
+        return new ErrorDTO(exception.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
+    }
 }

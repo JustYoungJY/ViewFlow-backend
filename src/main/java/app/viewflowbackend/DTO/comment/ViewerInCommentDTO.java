@@ -10,10 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentUpdateRequestDTO {
+public class ViewerInCommentDTO {
 
-    private String content;
+    private Long viewerId;
 
-    // Maybe null if it`s compilation
-    private Integer stars;
+    private String username;
+
+    private String avatarUrl;
 }

@@ -1,4 +1,4 @@
-package app.viewflowbackend.DTO.MediaRating;
+package app.viewflowbackend.DTO.favoriteMedia;
 
 
 import app.viewflowbackend.enums.MediaType;
@@ -14,18 +14,12 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MediaRatingResponseDTO {
-    private Long viewerId;
+public class FavoriteMediaResponseDTO {
 
     private Long mediaId;
 
     private MediaType mediaType;
 
-    private Integer stars;
-
-    private String comment;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
-
+    private LocalDateTime addedAt;
 }

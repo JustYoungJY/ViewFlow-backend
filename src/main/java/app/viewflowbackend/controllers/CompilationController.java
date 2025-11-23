@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class CompilationController {
     public ResponseEntity<Void> createCompilation(@CurrentUser Viewer viewer,
                                                   @Valid @RequestBody CompilationCreateRequestDTO request) {
         compilationService.createCompilation(viewer, request);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -72,7 +73,7 @@ public class CompilationController {
     public ResponseEntity<Void> removeMediaFromCompilation(@CurrentUser Viewer viewer, @PathVariable Long id,
                                                            @RequestParam Long mediaId, @RequestParam MediaType mediaType) throws AccessDeniedException {
         compilationService.removeMediaFromCompilation(viewer, id, mediaId, mediaType);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/like")
@@ -84,6 +85,6 @@ public class CompilationController {
     @DeleteMapping("/{id}/like")
     public ResponseEntity<Void> unlikeCompilation(@CurrentUser Viewer viewer, @PathVariable Long id) {
         compilationService.unlikeCompilation(viewer, id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

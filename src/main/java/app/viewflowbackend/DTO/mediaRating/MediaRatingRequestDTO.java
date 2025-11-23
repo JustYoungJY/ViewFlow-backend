@@ -1,4 +1,4 @@
-package app.viewflowbackend.DTO.FavoriteMedia;
+package app.viewflowbackend.DTO.mediaRating;
 
 
 import app.viewflowbackend.enums.MediaType;
@@ -11,9 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FavoriteMediaAddRequestDTO {
+public class MediaRatingRequestDTO {
 
     private Long mediaId;
 
     private MediaType mediaType;
+
+    private Integer stars;
+
+    private String comment;
 }
