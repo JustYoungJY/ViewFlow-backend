@@ -5,7 +5,7 @@ import app.viewflowbackend.DTO.comment.ViewerInCommentDTO;
 import app.viewflowbackend.DTO.comment.compilation.CompilationCommentCreateRequestDTO;
 import app.viewflowbackend.DTO.comment.compilation.CompilationCommentResponseDTO;
 import app.viewflowbackend.DTO.comment.compilation.CompilationCommentUpdateRequestDTO;
-import app.viewflowbackend.exceptions.AccessDeniedException;
+import app.viewflowbackend.exceptions.PermissionDeniedException;
 import app.viewflowbackend.exceptions.CommentNotFoundException;
 import app.viewflowbackend.exceptions.CompilationNotFoundException;
 import app.viewflowbackend.models.basic.Compilation;
@@ -69,7 +69,7 @@ public class CompilationCommentService {
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
 
         if (!compilationComment.getViewer().getId().equals(viewer.getId())) {
-            throw new AccessDeniedException("Not owner");
+            throw new PermissionDeniedException("Not owner");
         }
         compilationComment.setContent(dto.getContent());
         compilationComment.setUpdatedAt(LocalDateTime.now());
@@ -83,7 +83,7 @@ public class CompilationCommentService {
         CompilationComment compilationComment = compilationCommentRepository
                 .findById(commentId).orElseThrow(() -> new CommentNotFoundException(commentId));
         if (!compilationComment.getViewer().getId().equals(viewer.getId())) {
-            throw new AccessDeniedException("Not owner");
+            throw new PermissionDeniedException("Not owner");
         }
 
         compilationComment.setIsDeleted(true);

@@ -8,7 +8,7 @@ import app.viewflowbackend.DTO.compilation.CompilationResponseDTO;
 import app.viewflowbackend.DTO.compilation.CompilationUpdateRequestDTO;
 import app.viewflowbackend.DTO.compilationMedia.CompilationMediaAddRequestDTO;
 import app.viewflowbackend.enums.MediaType;
-import app.viewflowbackend.exceptions.AccessDeniedException;
+import app.viewflowbackend.exceptions.PermissionDeniedException;
 import app.viewflowbackend.exceptions.AlreadyLikedException;
 import app.viewflowbackend.exceptions.CompilationNotFoundException;
 import app.viewflowbackend.id.CompilationLikePK;
@@ -119,11 +119,11 @@ public class CompilationService {
 
 
     @Transactional
-    public void updateCompilation(Viewer viewer, Long id, CompilationUpdateRequestDTO dto) throws AccessDeniedException {
+    public void updateCompilation(Viewer viewer, Long id, CompilationUpdateRequestDTO dto) throws PermissionDeniedException {
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
         if (!viewer.getId().equals(compilation.getViewer().getId())) {
-            throw new AccessDeniedException("Not owner");
+            throw new PermissionDeniedException("Not owner");
         }
 
         Optional.ofNullable(dto.getTitle()).ifPresent(compilation::setTitle);
@@ -136,12 +136,12 @@ public class CompilationService {
 
 
     @Transactional
-    public void deleteCompilation(Viewer viewer, Long compilationId) throws AccessDeniedException {
+    public void deleteCompilation(Viewer viewer, Long compilationId) throws PermissionDeniedException {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
 
         if (!viewer.getId().equals(compilation.getViewer().getId())) {
-            throw new AccessDeniedException("Not owner");
+            throw new PermissionDeniedException("Not owner");
         }
 
         compilationRepository.delete(compilation);
@@ -149,11 +149,11 @@ public class CompilationService {
 
 
     @Transactional
-    public void addMediaToCompilation(Viewer viewer, Long compilationId, CompilationMediaAddRequestDTO dto) throws AccessDeniedException {
+    public void addMediaToCompilation(Viewer viewer, Long compilationId, CompilationMediaAddRequestDTO dto) throws PermissionDeniedException {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
         if (!viewer.getId().equals(compilation.getViewer().getId())) {
-            throw new AccessDeniedException("Not owner");
+            throw new PermissionDeniedException("Not owner");
         }
 
         CompilationMediaPK pk = new CompilationMediaPK(compilationId, dto.getMediaId(), dto.getMediaType());
@@ -173,12 +173,12 @@ public class CompilationService {
 
 
     @Transactional
-    public void removeMediaFromCompilation(Viewer viewer, Long compilationId, Long mediaId, MediaType mediaType) throws AccessDeniedException {
+    public void removeMediaFromCompilation(Viewer viewer, Long compilationId, Long mediaId, MediaType mediaType) throws PermissionDeniedException {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
 
         if (!viewer.getId().equals(compilation.getViewer().getId())) {
-            throw new app.viewflowbackend.exceptions.AccessDeniedException("Not owner");
+            throw new PermissionDeniedException("Not owner");
         }
 
         CompilationMediaPK pk = new CompilationMediaPK(compilationId, mediaId, mediaType);
@@ -189,7 +189,7 @@ public class CompilationService {
 
 
     @Transactional
-    public void likeCompilation(Viewer viewer, Long compilationId) throws AccessDeniedException {
+    public void likeCompilation(Viewer viewer, Long compilationId) throws PermissionDeniedException {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
 

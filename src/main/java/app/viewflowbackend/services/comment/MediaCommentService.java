@@ -5,7 +5,7 @@ import app.viewflowbackend.DTO.comment.media.MediaCommentCreateRequestDTO;
 import app.viewflowbackend.DTO.comment.media.MediaCommentResponseDTO;
 import app.viewflowbackend.DTO.comment.media.MediaCommentUpdateRequestDTO;
 import app.viewflowbackend.enums.MediaType;
-import app.viewflowbackend.exceptions.AccessDeniedException;
+import app.viewflowbackend.exceptions.PermissionDeniedException;
 import app.viewflowbackend.exceptions.CommentNotFoundException;
 import app.viewflowbackend.models.basic.MediaComment;
 import app.viewflowbackend.models.basic.Viewer;
@@ -68,7 +68,7 @@ public class MediaCommentService {
         MediaComment mediaComment = mediaCommentRepository.findById(entityId)
                 .orElseThrow(() -> new CommentNotFoundException(entityId));
         if (!mediaComment.getViewer().getId().equals(viewer.getId())) {
-            throw new AccessDeniedException("Not owner");
+            throw new PermissionDeniedException("Not owner");
         }
 
         mediaComment.setContent(dto.getContent());
@@ -83,7 +83,7 @@ public class MediaCommentService {
         MediaComment mediaComment = mediaCommentRepository.findById(entityId)
                 .orElseThrow(() -> new CommentNotFoundException(entityId));
         if (!mediaComment.getViewer().getId().equals(viewer.getId())) {
-            throw new AccessDeniedException("Not owner");
+            throw new PermissionDeniedException("Not owner");
         }
         mediaComment.setIsDeleted(true);
         mediaCommentRepository.save(mediaComment);

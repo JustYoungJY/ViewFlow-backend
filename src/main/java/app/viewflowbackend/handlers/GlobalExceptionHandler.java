@@ -3,6 +3,7 @@ package app.viewflowbackend.handlers;
 import app.viewflowbackend.DTO.ErrorDTO;
 import app.viewflowbackend.exceptions.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
         return new ErrorDTO(exception.getMessage(), HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler(PermissionDeniedException.class)
     public ErrorDTO handleAccessDeniedException(RuntimeException exception) {
         return new ErrorDTO(exception.getMessage(), HttpStatus.FORBIDDEN.value(), LocalDateTime.now());
     }
@@ -40,6 +41,7 @@ public class GlobalExceptionHandler {
             CompilationNotFoundException.class,
             MediaNotFoundException.class,
             FavoriteNotFoundException.class,
+            TagNotFoundException.class,
     })
     public ErrorDTO handleNotFoundException(RuntimeException exception) {
         return new ErrorDTO(exception.getMessage(), HttpStatus.NOT_FOUND.value(), LocalDateTime.now());
@@ -48,5 +50,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorDTO handleIllegalArgumentException(RuntimeException exception) {
         return new ErrorDTO(exception.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(TagAlreadyExistsException.class)
+    public ErrorDTO handleAlreadyExistsException(RuntimeException exception) {
+        return new ErrorDTO(exception.getMessage(), HttpStatus.CONFLICT.value(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ErrorDTO handleMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
+        return new ErrorDTO(
+                exception.getMessage(), HttpStatus.METHOD_NOT_ALLOWED.value(), LocalDateTime.now()
+        );
     }
 }

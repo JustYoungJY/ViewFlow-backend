@@ -1,4 +1,4 @@
-package app.viewflowbackend.DTO;
+package app.viewflowbackend.DTO.tag;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
