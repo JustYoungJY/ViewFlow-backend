@@ -1,5 +1,6 @@
 package app.viewflowbackend.DTO.watchedMedia;
 
+import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
 import app.viewflowbackend.enums.MediaType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -28,4 +29,6 @@ public class WatchedMediaResponseDTO {
     private Integer lastSeason;
 
     private Integer lastEpisode;
+
+    private MediaDetailsDTO mediaDetails;
 }
