@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CompilationMediaRepository extends JpaRepository<CompilationMedia, Long> {
+public interface CompilationMediaRepository extends JpaRepository<CompilationMedia, CompilationMediaPK> {
     List<CompilationMedia> findByCompilationId(Long compilation_id);
 
     void deleteById(CompilationMediaPK compilationMediaPK);

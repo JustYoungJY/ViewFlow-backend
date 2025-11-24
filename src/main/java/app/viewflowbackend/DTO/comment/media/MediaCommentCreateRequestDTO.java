@@ -1,7 +1,6 @@
-package app.viewflowbackend.DTO.comment;
+package app.viewflowbackend.DTO.comment.media;
 
 
-import app.viewflowbackend.enums.CommentType;
 import app.viewflowbackend.enums.MediaType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,17 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentCreateRequestDTO {
+public class MediaCommentCreateRequestDTO {
 
     private String content;
 
-    private CommentType commentType;
+    private Long mediaId;
 
-    private Long entityId;
-
-    // Maybe null if it`s compilation
     private MediaType mediaType;
 
-    // Maybe null if it`s compilation
     private Integer stars;
 }

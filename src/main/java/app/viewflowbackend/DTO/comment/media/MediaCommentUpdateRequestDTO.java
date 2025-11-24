@@ -1,4 +1,4 @@
-package app.viewflowbackend.DTO.comment;
+package app.viewflowbackend.DTO.comment.media;
 
 
 import lombok.AllArgsConstructor;
@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentUpdateRequestDTO {
+public class MediaCommentUpdateRequestDTO {
 
     private String content;
 
-    // Maybe null if it`s compilation
     private Integer stars;
 }

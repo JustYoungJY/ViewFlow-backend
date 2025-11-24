@@ -1,8 +1,7 @@
-package app.viewflowbackend.DTO.comment;
+package app.viewflowbackend.DTO.comment.compilation;
 
 
-import app.viewflowbackend.enums.MediaType;
-import app.viewflowbackend.models.basic.Viewer;
+import app.viewflowbackend.DTO.comment.ViewerInCommentDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,19 +14,13 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentResponseDTO {
+public class CompilationCommentResponseDTO {
 
     private Long id;
 
     private ViewerInCommentDTO viewer;
 
     private String content;
-
-    // Maybe null if it`s compilation
-    private MediaType mediaType;
-
-    // Maybe null if it`s compilation
-    private Integer stars;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
