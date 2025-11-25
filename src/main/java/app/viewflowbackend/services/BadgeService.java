@@ -5,23 +5,20 @@ import app.viewflowbackend.DTO.badge.BadgeCreateRequestDTO;
 import app.viewflowbackend.DTO.badge.BadgeResponseDTO;
 import app.viewflowbackend.DTO.badge.BadgeUpdateRequestDTO;
 import app.viewflowbackend.enums.MediaType;
-import app.viewflowbackend.enums.Role;
-import app.viewflowbackend.exceptions.BadgeNotFoundException;
-import app.viewflowbackend.exceptions.MediaBadgeNotFoundException;
-import app.viewflowbackend.exceptions.PermissionDeniedException;
+import app.viewflowbackend.exceptions.notFound.BadgeNotFoundException;
+import app.viewflowbackend.exceptions.notFound.MediaBadgeNotFoundException;
 import app.viewflowbackend.id.MediaBadgePK;
 import app.viewflowbackend.models.basic.Badge;
 import app.viewflowbackend.models.basic.Viewer;
 import app.viewflowbackend.models.binders.MediaBadge;
-import app.viewflowbackend.repositories.BadgeRepository;
-import app.viewflowbackend.repositories.MediaBadgeRepository;
+import app.viewflowbackend.repositories.basic.BadgeRepository;
+import app.viewflowbackend.repositories.binders.MediaBadgeRepository;
 import app.viewflowbackend.services.api.TmdbService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -93,7 +90,7 @@ public class BadgeService {
 
 
     @Transactional
-    public void addBadgeToMedia(Viewer viewer, Long badgeId ,Long mediaId, MediaType mediaType) {
+    public void addBadgeToMedia(Viewer viewer, Long badgeId, Long mediaId, MediaType mediaType) {
         Badge badge = badgeRepository.findById(badgeId)
                 .orElseThrow(() -> new BadgeNotFoundException(badgeId));
         tmdbService.checkMediaExists(mediaId, mediaType);

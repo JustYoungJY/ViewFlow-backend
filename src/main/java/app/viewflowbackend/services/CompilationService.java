@@ -8,18 +8,18 @@ import app.viewflowbackend.DTO.compilation.CompilationResponseDTO;
 import app.viewflowbackend.DTO.compilation.CompilationUpdateRequestDTO;
 import app.viewflowbackend.DTO.compilationMedia.CompilationMediaAddRequestDTO;
 import app.viewflowbackend.enums.MediaType;
-import app.viewflowbackend.exceptions.PermissionDeniedException;
-import app.viewflowbackend.exceptions.AlreadyLikedException;
-import app.viewflowbackend.exceptions.CompilationNotFoundException;
+import app.viewflowbackend.exceptions.alreadyExists.AlreadyLikedException;
+import app.viewflowbackend.exceptions.auth.PermissionDeniedException;
+import app.viewflowbackend.exceptions.notFound.CompilationNotFoundException;
 import app.viewflowbackend.id.CompilationLikePK;
 import app.viewflowbackend.id.CompilationMediaPK;
 import app.viewflowbackend.models.basic.Compilation;
 import app.viewflowbackend.models.basic.Viewer;
 import app.viewflowbackend.models.binders.CompilationLike;
 import app.viewflowbackend.models.binders.CompilationMedia;
-import app.viewflowbackend.repositories.CompilationLikeRepository;
-import app.viewflowbackend.repositories.CompilationMediaRepository;
-import app.viewflowbackend.repositories.CompilationRepository;
+import app.viewflowbackend.repositories.basic.CompilationRepository;
+import app.viewflowbackend.repositories.binders.CompilationLikeRepository;
+import app.viewflowbackend.repositories.binders.CompilationMediaRepository;
 import app.viewflowbackend.services.api.TmdbService;
 import app.viewflowbackend.specifications.CompilationSpecifications;
 import org.modelmapper.ModelMapper;
@@ -209,6 +209,15 @@ public class CompilationService {
         compilationLikeRepository.save(like);
         compilation.setLikesCount(compilation.getLikesCount() + 1);
         compilationRepository.save(compilation);
+    }
+
+
+    public Page<CompilationListItemDTO> getLikedCompilations(Viewer viewer, Pageable pageable) {
+        Page<CompilationLike> listLiked = compilationLikeRepository.findByViewerId(viewer.getId(), pageable);
+        Page<Compilation> compilations = listLiked.map(like ->
+                compilationRepository.findById(like.getCompilation().getId()).orElse(null));
+
+        return compilations.map(this::mapToListItem);
     }
 
 

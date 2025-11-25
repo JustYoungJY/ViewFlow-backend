@@ -6,6 +6,7 @@ import app.viewflowbackend.DTO.tag.TagUpdateRequest;
 import app.viewflowbackend.annotations.CurrentUser;
 import app.viewflowbackend.models.basic.Viewer;
 import app.viewflowbackend.services.TagService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,7 @@ public class TagController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Void> createTag(@RequestBody TagCreateRequest tagCreateRequest) {
+    public ResponseEntity<Void> createTag(@Valid @RequestBody TagCreateRequest tagCreateRequest) {
         tagService.createTag(tagCreateRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -49,7 +50,7 @@ public class TagController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateTag(@PathVariable Long id, @RequestBody TagUpdateRequest tagUpdateRequest) {
+    public ResponseEntity<Void> updateTag(@PathVariable Long id, @Valid @RequestBody TagUpdateRequest tagUpdateRequest) {
         tagService.updateTag(id, tagUpdateRequest);
         return ResponseEntity.ok().build();
     }

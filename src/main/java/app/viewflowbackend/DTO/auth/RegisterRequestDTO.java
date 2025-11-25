@@ -15,15 +15,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterRequestDTO {
 
-    @NotBlank
-    @Size(min = 3, max = 50, message = "username should be between 3 and 50 characters")
+    @NotBlank(message = "Username должен быть длиной от 5 до 32 символов")
+    @Size(min = 5, max = 32, message = "Username должен быть длиной от 5 до 32 символов")
     private String username;
 
-    @Email
-    @NotBlank
+    @Email(message = "Поле email должно содержать валидную электронную почту")
+    @NotBlank(message = "Email не должен быть пустым")
     private String email;
 
-    @NotBlank
-    @Size(min = 8, message = "The password should be longer than 8 characters")
+    @NotBlank(message = "Пароль должен быть длиной от 8 до 32 символов")
+    @Size(min = 8, max = 32, message = "Пароль должен быть длиной от 8 до 32 символов")
     private String password;
 }

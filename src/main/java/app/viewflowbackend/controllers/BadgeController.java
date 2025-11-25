@@ -7,7 +7,6 @@ import app.viewflowbackend.DTO.badge.BadgeUpdateRequestDTO;
 import app.viewflowbackend.annotations.CurrentUser;
 import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.models.basic.Viewer;
-import app.viewflowbackend.repositories.BadgeRepository;
 import app.viewflowbackend.services.BadgeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,51 +21,51 @@ import java.util.List;
 @RequestMapping("/api/badges")
 public class BadgeController {
 
-   private final BadgeService badgeService;
+    private final BadgeService badgeService;
 
 
-   @Autowired
-   public BadgeController(BadgeService badgeService) {
-       this.badgeService = badgeService;
-   }
+    @Autowired
+    public BadgeController(BadgeService badgeService) {
+        this.badgeService = badgeService;
+    }
 
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> createBadge(@CurrentUser Viewer viewer,
                                             @Valid @RequestBody BadgeCreateRequestDTO dto) {
-       badgeService.createBadge(viewer, dto);
-       return new ResponseEntity<>(HttpStatus.CREATED);
+        badgeService.createBadge(viewer, dto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 
     @GetMapping("/media")
     public ResponseEntity<BadgeResponseDTO> getBadge(@RequestParam Long mediaId,
                                                      @RequestParam MediaType mediaType) {
-       return ResponseEntity.ok(badgeService.getMediaBadge(mediaId, mediaType));
+        return ResponseEntity.ok(badgeService.getMediaBadge(mediaId, mediaType));
     }
 
 
     @GetMapping
     public ResponseEntity<List<BadgeResponseDTO>> getAllBadges() {
-       return ResponseEntity.ok(badgeService.getAllBadges());
+        return ResponseEntity.ok(badgeService.getAllBadges());
     }
 
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{badgeId}")
     public ResponseEntity<Void> updateBadge(@CurrentUser Viewer viewer, @PathVariable Long badgeId,
-                            @Valid @RequestBody BadgeUpdateRequestDTO dto) {
-       badgeService.updateBadge(viewer, badgeId, dto);
-       return ResponseEntity.ok().build();
+                                            @Valid @RequestBody BadgeUpdateRequestDTO dto) {
+        badgeService.updateBadge(viewer, badgeId, dto);
+        return ResponseEntity.ok().build();
     }
 
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{badgeId}")
     public ResponseEntity<Void> deleteBadge(@CurrentUser Viewer viewer, @PathVariable Long badgeId) {
-       badgeService.deleteBadge(viewer, badgeId);
-       return ResponseEntity.noContent().build();
+        badgeService.deleteBadge(viewer, badgeId);
+        return ResponseEntity.noContent().build();
     }
 
 
@@ -86,10 +85,9 @@ public class BadgeController {
     public ResponseEntity<Void> removeBadgeFromMedia(@CurrentUser Viewer viewer,
                                                      @RequestParam Long mediaId,
                                                      @RequestParam MediaType mediaType) {
-       badgeService.removeBadgeFromMedia(viewer, mediaId, mediaType);
-       return ResponseEntity.ok().build();
+        badgeService.removeBadgeFromMedia(viewer, mediaId, mediaType);
+        return ResponseEntity.ok().build();
     }
-
 
 
 }

@@ -1,6 +1,6 @@
 package app.viewflowbackend.services.security;
 
-import app.viewflowbackend.exceptions.InvalidRefreshTokenException;
+import app.viewflowbackend.exceptions.auth.InvalidRefreshTokenException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

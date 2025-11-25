@@ -4,7 +4,8 @@ import app.viewflowbackend.DTO.user.UserProfileDTO;
 import app.viewflowbackend.DTO.user.UserUpdateRequestDTO;
 import app.viewflowbackend.annotations.CurrentUser;
 import app.viewflowbackend.models.basic.Viewer;
-import app.viewflowbackend.services.security.UserService;
+import app.viewflowbackend.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +23,16 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserProfileDTO> getProfile(@CurrentUser Viewer viewer) {
-        // TODO: Make request to fill in the fields:
-        //  likesCount, compilationsCount, filmsWatched
-        return ResponseEntity.ok(userService.convertToUserProfileDTO(viewer));
+        UserProfileDTO userProfile = userService.convertToUserProfileDTO(viewer);
+        userProfile.setLikesCount(userService.getTotalReceivedLikes(viewer.getId()));
+        userProfile.setCompilationsCount(userService.getTotalCreatedCompilations(viewer.getId()));
+        userProfile.setFilmsWatched(userService.getTotalWatchedMedia(viewer.getId()));
+
+        return ResponseEntity.ok(userProfile);
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<String> updateProfile(@CurrentUser Viewer viewer, @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
+    public ResponseEntity<String> updateProfile(@CurrentUser Viewer viewer, @Valid @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
         userService.updateProfile(viewer, userUpdateRequestDTO);
         return ResponseEntity.ok("Successfully updated");
     }

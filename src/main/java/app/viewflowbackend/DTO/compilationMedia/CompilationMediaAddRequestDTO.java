@@ -2,6 +2,7 @@ package app.viewflowbackend.DTO.compilationMedia;
 
 
 import app.viewflowbackend.enums.MediaType;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CompilationMediaAddRequestDTO {
 
+    @NotBlank(message = "Id медиа не может быть пустым")
     private Long mediaId;
 
+    @NotBlank(message = "Тип медиа не может быть пустым")
     private MediaType mediaType;
 
+    @NotBlank(message = "Порядковый номер не может быть пустым")
     private Integer orderIndex;
 
     private String authorDescription;

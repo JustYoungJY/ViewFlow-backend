@@ -1,6 +1,5 @@
 package app.viewflowbackend.models.binders;
 
-import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.id.MediaBadgePK;
 import app.viewflowbackend.models.basic.Badge;
 import jakarta.persistence.*;

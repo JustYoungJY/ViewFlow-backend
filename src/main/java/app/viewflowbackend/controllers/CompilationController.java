@@ -17,8 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
-
 @RestController
 @RequestMapping("/api/compilations")
 public class CompilationController {
@@ -51,35 +49,41 @@ public class CompilationController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateCompilation(@CurrentUser Viewer viewer, @PathVariable Long id,
-                                                  @Valid @RequestBody CompilationUpdateRequestDTO dto) throws AccessDeniedException {
+                                                  @Valid @RequestBody CompilationUpdateRequestDTO dto) {
         compilationService.updateCompilation(viewer, id, dto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCompilation(@CurrentUser Viewer viewer, @PathVariable Long id) throws AccessDeniedException {
+    public ResponseEntity<Void> deleteCompilation(@CurrentUser Viewer viewer, @PathVariable Long id) {
         compilationService.deleteCompilation(viewer, id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/media")
     public ResponseEntity<Void> addMediaToCompilation(@CurrentUser Viewer viewer, @PathVariable Long id,
-                                                      @Valid @RequestBody CompilationMediaAddRequestDTO dto) throws AccessDeniedException {
+                                                      @Valid @RequestBody CompilationMediaAddRequestDTO dto) {
         compilationService.addMediaToCompilation(viewer, id, dto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/media")
     public ResponseEntity<Void> removeMediaFromCompilation(@CurrentUser Viewer viewer, @PathVariable Long id,
-                                                           @RequestParam Long mediaId, @RequestParam MediaType mediaType) throws AccessDeniedException {
+                                                           @RequestParam Long mediaId, @RequestParam MediaType mediaType) {
         compilationService.removeMediaFromCompilation(viewer, id, mediaId, mediaType);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/like")
-    public ResponseEntity<Void> likeCompilation(@CurrentUser Viewer viewer, @PathVariable Long id) throws AccessDeniedException {
+    public ResponseEntity<Void> likeCompilation(@CurrentUser Viewer viewer, @PathVariable Long id) {
         compilationService.likeCompilation(viewer, id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/like")
+    public ResponseEntity<Page<CompilationListItemDTO>> getCompilationLikes(@CurrentUser Viewer viewer,
+                                                                            Pageable pageable) {
+        return ResponseEntity.ok(compilationService.getLikedCompilations(viewer, pageable));
     }
 
     @DeleteMapping("/{id}/like")

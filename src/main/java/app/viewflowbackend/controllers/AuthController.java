@@ -4,7 +4,7 @@ import app.viewflowbackend.DTO.auth.LoginRequestDTO;
 import app.viewflowbackend.DTO.auth.RefreshTokenRequestDTO;
 import app.viewflowbackend.DTO.auth.RegisterRequestDTO;
 import app.viewflowbackend.DTO.auth.TokenResponseDTO;
-import app.viewflowbackend.services.security.UserService;
+import app.viewflowbackend.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

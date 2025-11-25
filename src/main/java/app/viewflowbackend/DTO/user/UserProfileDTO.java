@@ -28,11 +28,11 @@ public class UserProfileDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    private Integer likesCount;
+    private Long likesCount;
 
-    private Integer compilationsCount;
+    private Long compilationsCount;
 
-    private Integer filmsWatched;
+    private Long filmsWatched;
 
 
 }

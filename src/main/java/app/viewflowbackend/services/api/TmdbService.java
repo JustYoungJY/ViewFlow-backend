@@ -2,7 +2,7 @@ package app.viewflowbackend.services.api;
 
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
 import app.viewflowbackend.enums.MediaType;
-import app.viewflowbackend.exceptions.MediaNotFoundException;
+import app.viewflowbackend.exceptions.notFound.MediaNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
