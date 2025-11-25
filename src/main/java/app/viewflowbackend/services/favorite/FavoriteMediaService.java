@@ -38,7 +38,7 @@ public class FavoriteMediaService {
         if (favoriteMediaRepository.existsById(pk)) {
             favoriteMediaRepository.deleteById(pk);
         } else {
-            tmdbService.getMediaDetails(dto.getMediaId(), dto.getMediaType());
+            tmdbService.checkMediaExists(dto.getMediaId(), dto.getMediaType());
             FavoriteMedia favoriteMedia = FavoriteMedia
                     .builder()
                     .id(pk)

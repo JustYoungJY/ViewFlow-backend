@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -60,6 +61,21 @@ public class TmdbService {
                 .build();
 
         return dto;
+    }
+
+
+    public void checkMediaExists(Long id, MediaType type) {
+
+        String url = "https://api.themoviedb.org/3/" + type.name().toLowerCase() + "/" + id + "?api_key=" + apiKey + "&language=ru-RU";
+
+        try {
+            restTemplate.getForEntity(url, Void.class);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new MediaNotFoundException(id, type);
+            }
+            throw e;
+        }
     }
 
     //TODO: add another methods

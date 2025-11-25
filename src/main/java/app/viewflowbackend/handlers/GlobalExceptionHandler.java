@@ -42,6 +42,8 @@ public class GlobalExceptionHandler {
             MediaNotFoundException.class,
             FavoriteNotFoundException.class,
             TagNotFoundException.class,
+            BadgeNotFoundException.class,
+            MediaBadgeNotFoundException.class
     })
     public ErrorDTO handleNotFoundException(RuntimeException exception) {
         return new ErrorDTO(exception.getMessage(), HttpStatus.NOT_FOUND.value(), LocalDateTime.now());

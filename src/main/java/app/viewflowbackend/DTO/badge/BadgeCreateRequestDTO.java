@@ -1,4 +1,5 @@
-package app.viewflowbackend.DTO;
+package app.viewflowbackend.DTO.badge;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BadgeResponseDTO {
+public class BadgeCreateRequestDTO {
 
     private String name;
 

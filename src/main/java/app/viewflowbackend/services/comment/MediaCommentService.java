@@ -38,7 +38,7 @@ public class MediaCommentService {
 
     @Transactional
     public void createComment(Viewer viewer, MediaCommentCreateRequestDTO dto) {
-        tmdbService.getMediaDetails(dto.getMediaId(), dto.getMediaType());
+        tmdbService.checkMediaExists(dto.getMediaId(), dto.getMediaType());
         MediaComment comment = MediaComment
                 .builder()
                 .viewer(viewer)
