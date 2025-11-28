@@ -1,17 +1,21 @@
 package app.viewflowbackend.services.api;
 
-import app.viewflowbackend.DTO.api.RatingResponseDTO;
+import app.viewflowbackend.DTO.api.MediaCardResponseDTO;
+import app.viewflowbackend.DTO.api.MediaRatingResponseDTO;
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
+import app.viewflowbackend.DTO.auxiliary.TmdbMediaIdDTO;
 import app.viewflowbackend.enums.MediaType;
+import app.viewflowbackend.exceptions.api.InvalidResponseFormatException;
 import app.viewflowbackend.exceptions.notFound.MediaNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.print.attribute.standard.Media;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +47,7 @@ public class TmdbService {
 
         Map data = response.getBody();
 
-        RatingResponseDTO kinopoiskRatings = null;
+        MediaRatingResponseDTO kinopoiskRatings = new MediaRatingResponseDTO();
         if (data.containsKey("external_ids")) {
 
             Map<String, Object> externalIds = (Map<String, Object>) data.get("external_ids");
@@ -95,6 +99,25 @@ public class TmdbService {
         }
 
 
+        kinopoiskRatings.setRatingTmdb(Math.round(((Double) data.get("vote_average")) * 10.0) / 10.0);
+        Double sumOfRatings = kinopoiskRatings.getRatingTmdb();
+        int countOfRatings = 1;
+
+        Double kinopoisk = kinopoiskRatings.getRatingKinopoisk();
+        Double imdb = kinopoiskRatings.getRatingImdb();
+
+        if (kinopoisk != 0.0) {
+            sumOfRatings += kinopoisk;
+            countOfRatings++;
+        }
+        if (imdb != 0.0) {
+            sumOfRatings += imdb;
+            countOfRatings++;
+        }
+        Double averageRating = Math.round((sumOfRatings / countOfRatings) * 10.0) / 10.0;
+
+
+
         MediaDetailsDTO dto = MediaDetailsDTO
                 .builder()
                 .tmdbId(id)
@@ -108,7 +131,7 @@ public class TmdbService {
                         Integer.parseInt(Optional.ofNullable((String) data.get("release_date"))
                                 .orElse((String) data.get("first_air_date")).substring(0, 4)) : null)
                 .overview((String) data.get("overview"))
-                .voteAverage((Double) data.get("vote_average"))
+                .voteAverage(averageRating)
                 .voteCount((Integer) data.get("vote_count"))
                 .trailerYoutubeId(trailerYoutubeId)
                 .genres(((List<Map>) data.get("genres")).stream().map(g -> (String) g.get("name")).collect(Collectors.toList()))
@@ -119,11 +142,11 @@ public class TmdbService {
                 .numberOfSeasons(type == MediaType.TV ? (Integer) data.get("number_of_seasons") : null)
                 .country(
                         data.get("production_countries") != null && !((List<Map>) data.get("production_countries")).isEmpty() ?
-                                (String) ((List<Map>) data.get("production_countries")).get(0).get("name") : "Неизвестно"
+                                (String) ((List<Map>) data.get("production_countries")).get(0).get("name") : ""
                 )
                 .budget(
                         data.get("budget") != null && (Integer) data.get("budget") > 0 ?
-                                String.format("$%,d", (Integer) data.get("budget")) : "Неизвестно"
+                                String.format("$%,d", (Integer) data.get("budget")) : ""
                 )
                 .directors(directors)
                 .ratings(kinopoiskRatings)
@@ -145,6 +168,99 @@ public class TmdbService {
             }
             throw e;
         }
+    }
+
+
+    public List<MediaCardResponseDTO> getSimilarsMediaCard(Long mediaId, MediaType mediaType) {
+
+        String imdbId = getImdbId(mediaId, mediaType);
+        Long kinopoiskId = kinopoiskService.getKinopoiskIdByImdbId(imdbId);
+        List<Long> listSimilarIds = kinopoiskService.getSimilarsMediaIds(kinopoiskId);
+        List<TmdbMediaIdDTO> ids = listSimilarIds.stream()
+                .map(id -> getTmdbMediaIdAndMediaTypeByImdbId(kinopoiskService.getImdbIdByKinopoiskId(id)))
+                .filter(id -> id.getMediaId() != null && id.getMediaType() != null)
+                .toList();
+        List<MediaDetailsDTO> listMediaDetails = ids.stream().map(id ->
+                getMediaDetails(id.getMediaId(), id.getMediaType())).toList();
+
+        return listMediaDetails.stream().map(detail ->
+                MediaCardResponseDTO
+                        .builder()
+                        .mediaId(detail.getTmdbId())
+                        .mediaType(detail.getMediaType())
+                        .title(detail.getTitle())
+                        .posterUrl(detail.getPosterPath())
+                        .year(detail.getReleaseYear())
+                        .genres(detail.getGenres())
+                        .rating(detail.getVoteAverage())
+                        .build()
+        ).toList();
+
+    }
+
+
+    public String getImdbId(Long mediaId, MediaType mediaType) {
+        String url = "https://api.themoviedb.org/3/" + mediaType.name().toLowerCase() + "/" + mediaId + "/external_ids?api_key=" + apiKey;
+
+        try {
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            Map data = response.getBody();
+
+            if (!data.containsKey("imdb_id")) {
+                throw new MediaNotFoundException(mediaId, mediaType);
+            }
+
+            return (String) data.get("imdb_id");
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new InvalidResponseFormatException("Ошибка при получении данных от TMDB API: " + e.getStatusCode());
+        }
+    }
+
+
+    public TmdbMediaIdDTO getTmdbMediaIdAndMediaTypeByImdbId(String imdbId) {
+        String url = "https://api.themoviedb.org/3/find/" + imdbId + "?api_key=" + apiKey + "&external_source=imdb_id";
+
+        try {
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            Map data = response.getBody();
+
+            if (!data.containsKey("movie_results") && !data.containsKey("tv_results")) {
+                throw new InvalidResponseFormatException("Медиа с IMDb ID" + imdbId + " не найден");
+            }
+
+            if(data.containsKey("movie_results")) {
+                List<Map<String, Object>> movieResults = (List<Map<String, Object>>) data.get("movie_results");
+
+                if(!movieResults.isEmpty()) {
+                    Map<String, Object> movieResult = movieResults.get(0);
+
+//                Long mediaId = (Long) movieResult.get("id");
+                    Number numberMediaId = (Number) movieResult.get("id");
+                    Long mediaId = numberMediaId != null ? numberMediaId.longValue() : null;
+
+                    MediaType mediaType = MediaType.valueOf(movieResult.get("media_type").toString().toUpperCase());
+                    return new TmdbMediaIdDTO(mediaId, mediaType);
+                }
+            }
+
+            if(data.containsKey("tv_results")) {
+                List<Map<String, Object>> tvResults = (List<Map<String, Object>>) data.get("tv_results");
+
+                if(!tvResults.isEmpty()) {
+                    Map<String, Object> tvResult = tvResults.get(0);
+
+//                Long mediaId = (Long) tvResult.get("id");
+                    Number numberMediaId = (Number) tvResult.get("id");
+                    Long mediaId = numberMediaId != null ? numberMediaId.longValue() : null;
+
+                    MediaType mediaType = MediaType.valueOf(tvResult.get("media_type").toString().toUpperCase());
+                    return new TmdbMediaIdDTO(mediaId, mediaType);
+                }
+            }
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new InvalidResponseFormatException(e.getMessage());
+        }
+        return new TmdbMediaIdDTO();
     }
 
     // TODO: Write method for searching cast

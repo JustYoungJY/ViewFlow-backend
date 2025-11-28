@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RatingResponseDTO {
+public class MediaRatingResponseDTO {
 
-    private Double ratingKinopoisk;
+    private Double ratingKinopoisk = 0.0;
 
-    private Double ratingImdb;
+    private Double ratingImdb = 0.0;
+
+    private Double ratingTmdb = 0.0;
 }

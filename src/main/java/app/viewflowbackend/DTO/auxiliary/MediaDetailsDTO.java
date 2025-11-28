@@ -1,6 +1,6 @@
 package app.viewflowbackend.DTO.auxiliary;
 
-import app.viewflowbackend.DTO.api.RatingResponseDTO;
+import app.viewflowbackend.DTO.api.MediaRatingResponseDTO;
 import app.viewflowbackend.enums.MediaType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +53,6 @@ public class MediaDetailsDTO {
 
     private List<String> directors;
 
-    private RatingResponseDTO ratings;
+    private MediaRatingResponseDTO ratings;
 
 }
