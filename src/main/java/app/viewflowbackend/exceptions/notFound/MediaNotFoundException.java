@@ -4,6 +4,6 @@ import app.viewflowbackend.enums.MediaType;
 
 public class MediaNotFoundException extends RuntimeException {
     public MediaNotFoundException(Long id, MediaType type) {
-        super("Media with id " + id + " and type " + type + " not found");
+        super("Медиа с id: " + id + " и типом " + type + " не найдено");
     }
 }

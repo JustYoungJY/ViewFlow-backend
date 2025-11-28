@@ -2,6 +2,6 @@ package app.viewflowbackend.exceptions.notFound;
 
 public class CommentNotFoundException extends RuntimeException {
     public CommentNotFoundException(Long commentId) {
-        super("Comment with id " + commentId + " not found");
+        super("Комментарий с id: " + commentId + " не найден");
     }
 }
