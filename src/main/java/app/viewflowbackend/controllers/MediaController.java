@@ -1,6 +1,7 @@
 package app.viewflowbackend.controllers;
 
 import app.viewflowbackend.DTO.api.MediaCardResponseDTO;
+import app.viewflowbackend.DTO.api.MediaCarouselResponseDTO;
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
 import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.services.api.TmdbService;
@@ -32,5 +33,11 @@ public class MediaController {
     @GetMapping("/similar")
     public ResponseEntity<List<MediaCardResponseDTO>> getSimilarMedia(@RequestParam Long mediaId, @RequestParam MediaType mediaType) {
         return ResponseEntity.ok(tmdbService.getSimilarsMediaCard(mediaId, mediaType));
+    }
+
+
+    @GetMapping("/now-playing")
+    public ResponseEntity<List<MediaCarouselResponseDTO>> getNowPlayingMedia() {
+        return ResponseEntity.ok(tmdbService.getNowPlayingMedia());
     }
 }

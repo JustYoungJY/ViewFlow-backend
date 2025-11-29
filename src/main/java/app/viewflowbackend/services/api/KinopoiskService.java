@@ -103,7 +103,8 @@ public class KinopoiskService {
             }
 
             List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
-            return items.stream().map(item -> ((Number) item.get("filmId")).longValue()).limit(10).toList();
+            return items.stream().map(item -> ((Number) item.get("filmId")).longValue())
+                    .limit(2).toList();  // Count of movies
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new InvalidResponseFormatException("Ошибка при получении данных от Kinopoisk API: " + e.getStatusCode());
@@ -169,6 +170,34 @@ public class KinopoiskService {
             }
 
             return (String) data.get("imdbId");
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new InvalidResponseFormatException(e.getMessage());
+        }
+    }
+
+
+    public String getPoster(Long kinopoiskId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-API-KEY", apiKey);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        //https://kinopoiskapiunofficial.tech/api/v2.2/films/361/images?type=WALLPAPER&page=1
+        String url = baseUrl + "/api/v2.2/films/" + kinopoiskId + "/images?type=WALLPAPER&page=1";
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+            Map data = response.getBody();
+            if (data == null || !data.containsKey("items")) {
+                throw new InvalidResponseFormatException("Неверный формат ответа от Kinopoisk API");
+            }
+
+            List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
+            return (String) items.get(0).get("imageUrl");
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new InvalidResponseFormatException(e.getMessage());
         }

@@ -1,14 +1,18 @@
 package app.viewflowbackend.services.api;
 
 import app.viewflowbackend.DTO.api.MediaCardResponseDTO;
+import app.viewflowbackend.DTO.api.MediaCarouselResponseDTO;
 import app.viewflowbackend.DTO.api.MediaRatingResponseDTO;
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
 import app.viewflowbackend.DTO.auxiliary.TmdbMediaIdDTO;
 import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.exceptions.api.InvalidResponseFormatException;
 import app.viewflowbackend.exceptions.notFound.MediaNotFoundException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -16,6 +20,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.print.attribute.standard.Media;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,14 +29,16 @@ public class TmdbService {
 
     private final RestTemplate restTemplate;
     private final KinopoiskService kinopoiskService;
+    private final ObjectMapper objectMapper;
 
     @Value("${tmdb.api.key}")
     private String apiKey;
 
     @Autowired
-    public TmdbService(RestTemplate restTemplate, KinopoiskService kinopoiskService) {
+    public TmdbService(RestTemplate restTemplate, KinopoiskService kinopoiskService, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.kinopoiskService = kinopoiskService;
+        this.objectMapper = objectMapper;
     }
 
     public MediaDetailsDTO getMediaDetails(Long id, MediaType type) {
@@ -172,7 +179,6 @@ public class TmdbService {
 
 
     public List<MediaCardResponseDTO> getSimilarsMediaCard(Long mediaId, MediaType mediaType) {
-
         String imdbId = getImdbId(mediaId, mediaType);
         Long kinopoiskId = kinopoiskService.getKinopoiskIdByImdbId(imdbId);
         List<Long> listSimilarIds = kinopoiskService.getSimilarsMediaIds(kinopoiskId);
@@ -261,6 +267,21 @@ public class TmdbService {
             throw new InvalidResponseFormatException(e.getMessage());
         }
         return new TmdbMediaIdDTO();
+    }
+
+
+    public List<MediaCarouselResponseDTO> getNowPlayingMedia() {
+        try {
+            ClassPathResource resource = new ClassPathResource("carousel_data.json");
+
+            return objectMapper.readValue(
+                    resource.getInputStream(),
+                    new TypeReference<>() {}
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList(); // Возвращаем пустой список в случае ошибки
+        }
     }
 
     // TODO: Write method for searching cast
