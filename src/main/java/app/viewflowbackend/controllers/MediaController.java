@@ -1,11 +1,14 @@
 package app.viewflowbackend.controllers;
 
-import app.viewflowbackend.DTO.api.MediaCardResponseDTO;
-import app.viewflowbackend.DTO.api.MediaCarouselResponseDTO;
+import app.viewflowbackend.DTO.api.*;
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
 import app.viewflowbackend.enums.MediaType;
+import app.viewflowbackend.enums.RandomType;
+import app.viewflowbackend.services.api.KinopoiskService;
 import app.viewflowbackend.services.api.TmdbService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +19,13 @@ import java.util.List;
 public class MediaController {
 
     private final TmdbService tmdbService;
+    private final KinopoiskService kinopoiskService;
 
 
     @Autowired
-    public MediaController(TmdbService tmdbService) {
+    public MediaController(TmdbService tmdbService, KinopoiskService kinopoiskService) {
         this.tmdbService = tmdbService;
+        this.kinopoiskService = kinopoiskService;
     }
 
 
@@ -39,5 +44,37 @@ public class MediaController {
     @GetMapping("/now-playing")
     public ResponseEntity<List<MediaCarouselResponseDTO>> getNowPlayingMedia() {
         return ResponseEntity.ok(tmdbService.getNowPlayingMedia());
+    }
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<GenreDTO>> getGenres() {
+        return ResponseEntity.ok(tmdbService.getGenres());
+    }
+
+
+    @GetMapping("/random")
+    public ResponseEntity<RandomMediaResponseCardDTO> getRandomMedia(@RequestParam(required = false) Long genreId,
+                                                                     @RequestParam Integer minYear,
+                                                                     @RequestParam Integer maxYear,
+                                                                     @RequestParam Double minRating,
+                                                                     @RequestParam Double maxRating,
+                                                                     @RequestParam RandomType randomType) {
+        RandomMediaCardRequestDTO dto;
+
+        if(genreId != null && genreId > 0) {
+            GenreDTO genreDTO = new GenreDTO();
+            genreDTO.setId(genreId);
+            dto = new RandomMediaCardRequestDTO(genreDTO, minYear, maxYear, minRating, maxRating, randomType);
+        } else {
+            dto = new RandomMediaCardRequestDTO(null, minYear, maxYear, minRating, maxRating, randomType);
+        }
+
+        for(int i = 0; i < 20; i++) {
+            RandomMediaResponseCardDTO card = kinopoiskService.getRandomMediaCard(dto);
+            if(card != null) {
+                return ResponseEntity.ok(card);
+            }
+        }
+        return ResponseEntity.noContent().build();
     }
 }
