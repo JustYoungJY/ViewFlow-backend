@@ -1,7 +1,6 @@
 package app.viewflowbackend.DTO.api;
 
 
-import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.enums.RandomType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

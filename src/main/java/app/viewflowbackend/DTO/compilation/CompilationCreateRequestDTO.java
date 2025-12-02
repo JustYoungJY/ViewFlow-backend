@@ -2,6 +2,7 @@ package app.viewflowbackend.DTO.compilation;
 
 import app.viewflowbackend.DTO.compilationMedia.CompilationMediaAddRequestDTO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class CompilationCreateRequestDTO {
     @NotBlank(message = "Картинка не может отсутствовать")
     private String imageUrl;
 
-    @NotBlank(message = "Настройки публичности не могут быть пустыми")
+    @NotNull(message = "Настройки публичности не могут быть пустыми")
     private Boolean isPublic;
 
     @Size(min = 1, message = "Подборка должно содержать хотя бы 1 фильм")

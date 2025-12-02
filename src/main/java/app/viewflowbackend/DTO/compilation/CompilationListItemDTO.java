@@ -1,10 +1,13 @@
 package app.viewflowbackend.DTO.compilation;
 
 
+import app.viewflowbackend.DTO.tag.TagResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -23,5 +26,9 @@ public class CompilationListItemDTO {
     private Integer likesCount;
 
     private String viewerUsername;
+
+    private String viewerAvatarUrl;
+
+    private List<TagResponseDTO> tags;
 
 }

@@ -32,7 +32,8 @@ public class CategoryService {
 
             return objectMapper.readValue(
                     resource.getInputStream(),
-                    new TypeReference<>() {}
+                    new TypeReference<>() {
+                    }
             );
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,7 +48,8 @@ public class CategoryService {
 
             List<CategoryResponseDTO> dto = objectMapper.readValue(
                     resource.getInputStream(),
-                    new TypeReference<>() {}
+                    new TypeReference<>() {
+                    }
             );
 
             return dto.stream().filter(c -> id.equals(c.getId())).findFirst().orElse(null);

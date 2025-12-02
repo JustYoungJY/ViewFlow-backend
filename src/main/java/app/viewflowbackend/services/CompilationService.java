@@ -7,6 +7,7 @@ import app.viewflowbackend.DTO.compilation.CompilationListItemDTO;
 import app.viewflowbackend.DTO.compilation.CompilationResponseDTO;
 import app.viewflowbackend.DTO.compilation.CompilationUpdateRequestDTO;
 import app.viewflowbackend.DTO.compilationMedia.CompilationMediaAddRequestDTO;
+import app.viewflowbackend.DTO.tag.TagResponseDTO;
 import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.exceptions.alreadyExists.AlreadyLikedException;
 import app.viewflowbackend.exceptions.auth.PermissionDeniedException;
@@ -108,10 +109,13 @@ public class CompilationService {
     }
 
 
-    public Page<CompilationListItemDTO> getCompilations(Pageable pageable, String filter) {
+    public Page<CompilationListItemDTO> getCompilations(Pageable pageable, String filter, List<String> tags) {
         Specification<Compilation> spec = Specification.where(CompilationSpecifications.isPublic());
-        if (filter != null) {
-            spec = spec.and(CompilationSpecifications.filterBy(filter));
+        if (filter != null && !filter.isEmpty()) {
+            spec = spec.and(CompilationSpecifications.filterByTitle(filter));
+        }
+        if (tags != null && !tags.isEmpty()) {
+            spec = spec.and(CompilationSpecifications.filterByTags(tags));
         }
         Page<Compilation> page = compilationRepository.findAll(spec, pageable);
         return page.map(this::mapToListItem);
@@ -241,6 +245,12 @@ public class CompilationService {
                 .mediaCount(compilation.getMediaCount())
                 .likesCount(compilation.getLikesCount())
                 .viewerUsername(compilation.getViewer().getUsername())
+                .viewerAvatarUrl(compilation.getViewer().getAvatarUrl())
+                .tags(compilation.getTags().stream().map(tag -> TagResponseDTO
+                        .builder()
+                        .name(tag.getTag().getName())
+                        .id(tag.getTag().getId())
+                        .build()).toList())
                 .build();
     }
 

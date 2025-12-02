@@ -2,15 +2,17 @@ package app.viewflowbackend.controllers;
 
 import app.viewflowbackend.DTO.api.*;
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
+import app.viewflowbackend.DTO.auxiliary.MediaSelectionDTO;
 import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.enums.RandomType;
 import app.viewflowbackend.services.api.KinopoiskService;
 import app.viewflowbackend.services.api.TmdbService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -61,7 +63,7 @@ public class MediaController {
                                                                      @RequestParam RandomType randomType) {
         RandomMediaCardRequestDTO dto;
 
-        if(genreId != null && genreId > 0) {
+        if (genreId != null && genreId > 0) {
             GenreDTO genreDTO = new GenreDTO();
             genreDTO.setId(genreId);
             dto = new RandomMediaCardRequestDTO(genreDTO, minYear, maxYear, minRating, maxRating, randomType);
@@ -69,12 +71,17 @@ public class MediaController {
             dto = new RandomMediaCardRequestDTO(null, minYear, maxYear, minRating, maxRating, randomType);
         }
 
-        for(int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20; i++) {
             RandomMediaResponseCardDTO card = kinopoiskService.getRandomMediaCard(dto);
-            if(card != null) {
+            if (card != null) {
                 return ResponseEntity.ok(card);
             }
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/selection")
+    public ResponseEntity<List<MediaSelectionDTO>> getSelectionMedia(@RequestParam String query) {
+        return ResponseEntity.ok(tmdbService.getMediaSelection(query));
     }
 }

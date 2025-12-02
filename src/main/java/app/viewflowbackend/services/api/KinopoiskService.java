@@ -37,7 +37,7 @@ public class KinopoiskService {
 
 
     @Autowired
-    public KinopoiskService(RestTemplate restTemplate,@Lazy TmdbService tmdbService) {
+    public KinopoiskService(RestTemplate restTemplate, @Lazy TmdbService tmdbService) {
         this.restTemplate = restTemplate;
         this.tmdbService = tmdbService;
     }
@@ -217,12 +217,12 @@ public class KinopoiskService {
         String url = "";
 
         //https://kinopoiskapiunofficial.tech/api/v2.2/films?genres=13&order=RATING&type=FILM&ratingFrom=0&ratingTo=10&yearFrom=0&yearTo=3000&page=1
-        if(request.getGenre() != null) {
+        if (request.getGenre() != null) {
             url = baseUrl + "/api/v2.2/films?genres=" + request.getGenre().getId() + "&order=RATING&type="
-                    + request.getRandomType() +"&ratingFrom=" + request.getMinRating() + "&ratingTo=" + request.getMaxRating()
+                    + request.getRandomType() + "&ratingFrom=" + request.getMinRating() + "&ratingTo=" + request.getMaxRating()
                     + "&yearFrom=" + request.getMinYear() + "&yearTo=" + request.getMaxYear() + "&page=1";
         } else {
-            url = baseUrl + "/api/v2.2/films?order=RATING&type=" + request.getRandomType() +"&ratingFrom="
+            url = baseUrl + "/api/v2.2/films?order=RATING&type=" + request.getRandomType() + "&ratingFrom="
                     + request.getMinRating() + "&ratingTo=" + request.getMaxRating() + "&yearFrom="
                     + request.getMinYear() + "&yearTo=" + request.getMaxYear() + "&page=1";
         }
@@ -243,7 +243,7 @@ public class KinopoiskService {
 
             Integer totalPage = (Integer) data.get("totalPages");
             Integer total = (Integer) data.get("total");
-            if(total == null || total == 0) {
+            if (total == null || total == 0) {
                 return null;
             }
 

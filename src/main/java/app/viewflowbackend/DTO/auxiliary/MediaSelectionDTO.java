@@ -1,4 +1,4 @@
-package app.viewflowbackend.DTO.api;
+package app.viewflowbackend.DTO.auxiliary;
 
 
 import app.viewflowbackend.enums.MediaType;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MediaCarouselResponseDTO {
+public class MediaSelectionDTO {
 
     private Long mediaId;
 
@@ -19,8 +19,7 @@ public class MediaCarouselResponseDTO {
 
     private String title;
 
-    private String description;
+    private Integer releaseYear;
 
     private String posterUrl;
-
 }

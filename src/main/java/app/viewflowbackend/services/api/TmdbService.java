@@ -5,6 +5,7 @@ import app.viewflowbackend.DTO.api.MediaCardResponseDTO;
 import app.viewflowbackend.DTO.api.MediaCarouselResponseDTO;
 import app.viewflowbackend.DTO.api.MediaRatingResponseDTO;
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
+import app.viewflowbackend.DTO.auxiliary.MediaSelectionDTO;
 import app.viewflowbackend.DTO.auxiliary.TmdbMediaIdDTO;
 import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.exceptions.api.InvalidResponseFormatException;
@@ -14,7 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -122,7 +124,6 @@ public class TmdbService {
             countOfRatings++;
         }
         Double averageRating = Math.round((sumOfRatings / countOfRatings) * 10.0) / 10.0;
-
 
 
         MediaDetailsDTO dto = MediaDetailsDTO
@@ -234,10 +235,10 @@ public class TmdbService {
                 throw new InvalidResponseFormatException("Медиа с IMDb ID" + imdbId + " не найден");
             }
 
-            if(data.containsKey("movie_results")) {
+            if (data.containsKey("movie_results")) {
                 List<Map<String, Object>> movieResults = (List<Map<String, Object>>) data.get("movie_results");
 
-                if(!movieResults.isEmpty()) {
+                if (!movieResults.isEmpty()) {
                     Map<String, Object> movieResult = movieResults.get(0);
 
 //                Long mediaId = (Long) movieResult.get("id");
@@ -249,10 +250,10 @@ public class TmdbService {
                 }
             }
 
-            if(data.containsKey("tv_results")) {
+            if (data.containsKey("tv_results")) {
                 List<Map<String, Object>> tvResults = (List<Map<String, Object>>) data.get("tv_results");
 
-                if(!tvResults.isEmpty()) {
+                if (!tvResults.isEmpty()) {
                     Map<String, Object> tvResult = tvResults.get(0);
 
 //                Long mediaId = (Long) tvResult.get("id");
@@ -276,7 +277,8 @@ public class TmdbService {
 
             return objectMapper.readValue(
                     resource.getInputStream(),
-                    new TypeReference<>() {}
+                    new TypeReference<>() {
+                    }
             );
         } catch (IOException e) {
             e.printStackTrace();
@@ -291,12 +293,89 @@ public class TmdbService {
 
             return objectMapper.readValue(
                     resource.getInputStream(),
-                    new TypeReference<>() {}
+                    new TypeReference<>() {
+                    }
             );
         } catch (IOException e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+
+    public List<MediaSelectionDTO> getMediaSelection(String query) {
+        //https://api.themoviedb.org/3/search/movie
+        String movieUrl = "https://api.themoviedb.org/3/search/movie?query=" + query + "&include_adult=true&language=ru-RU&page=1" + "&api_key=" + apiKey;
+        String tvUrl = "https://api.themoviedb.org/3/search/tv?query=" + query + "&include_adult=true&language=ru-RU&page=1" + "&api_key=" + apiKey;
+
+        try {
+            ResponseEntity<Map> response = restTemplate.getForEntity(movieUrl, Map.class);
+            Map data = response.getBody();
+
+            if (data == null || !data.containsKey("results") || data.get("results") == null) {
+                return new ArrayList<>();
+            }
+
+            List<Map<String, Object>> results = (List<Map<String, Object>>) data.get("results");
+            if (results.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            List<MediaSelectionDTO> dto = new ArrayList<>();
+
+            for (Map<String, Object> result : results) {
+                Number numberMediaId = (Number) result.get("id");
+                Long mediaId = numberMediaId != null ? numberMediaId.longValue() : null;
+                String releaseDate = result.get("release_date") != null ? result.get("release_date").toString() : "";
+                Integer releaseYear = releaseDate.length() >= 4 ? Integer.parseInt(releaseDate.substring(0, 4)) : null;
+                dto.add(
+                        MediaSelectionDTO
+                                .builder()
+                                .mediaId(mediaId)
+                                .mediaType(MediaType.MOVIE)
+                                .title(result.get("title").toString())
+                                .releaseYear(releaseYear)
+                                .posterUrl(result.get("poster_path") != null ? result.get("poster_path").toString() : null)
+                                .build()
+                );
+            }
+
+
+            ResponseEntity<Map> secondResponse = restTemplate.getForEntity(tvUrl, Map.class);
+            Map secondData = secondResponse.getBody();
+
+            if (secondData == null || !secondData.containsKey("results") || secondData.get("results") == null) {
+                return new ArrayList<>();
+            }
+
+            List<Map<String, Object>> secondResults = (List<Map<String, Object>>) secondData.get("results");
+            if (secondResults.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            for (Map<String, Object> result : secondResults) {
+                Number numberMediaId = (Number) result.get("id");
+                Long mediaId = numberMediaId != null ? numberMediaId.longValue() : null;
+                String firstAirDate = result.get("first_air_date") != null ? result.get("first_air_date").toString() : "";
+                Integer releaseYear = firstAirDate.length() >= 4 ? Integer.parseInt(firstAirDate.substring(0, 4)) : null;
+                dto.add(
+                        MediaSelectionDTO
+                                .builder()
+                                .mediaId(mediaId)
+                                .mediaType(MediaType.TV)
+                                .title(result.get("name").toString())
+                                .releaseYear(releaseYear)
+                                .posterUrl(result.get("poster_path").toString())
+                                .build()
+                );
+            }
+
+
+            return dto;
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new InvalidResponseFormatException(e.getMessage());
+        }
+
     }
 
     // TODO: Write method for searching cast

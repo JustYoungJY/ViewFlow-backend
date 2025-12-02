@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/compilations")
 public class CompilationController {
@@ -43,8 +45,9 @@ public class CompilationController {
 
     @GetMapping
     public ResponseEntity<Page<CompilationListItemDTO>> getCompilations(Pageable pageable,
-                                                                        @RequestParam(required = false) String filter) {
-        return ResponseEntity.ok(compilationService.getCompilations(pageable, filter));
+                                                                        @RequestParam(required = false) String titleFilter,
+                                                                        @RequestParam(required = false) List<String> tags) {
+        return ResponseEntity.ok(compilationService.getCompilations(pageable, titleFilter, tags));
     }
 
     @PutMapping("/{id}")
