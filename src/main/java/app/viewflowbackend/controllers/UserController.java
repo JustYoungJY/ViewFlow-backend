@@ -2,6 +2,7 @@ package app.viewflowbackend.controllers;
 
 import app.viewflowbackend.DTO.user.UserProfileDTO;
 import app.viewflowbackend.DTO.user.UserUpdateRequestDTO;
+import app.viewflowbackend.DTO.user.ViewerResponseDTO;
 import app.viewflowbackend.annotations.CurrentUser;
 import app.viewflowbackend.models.basic.Viewer;
 import app.viewflowbackend.services.UserService;
@@ -35,5 +36,14 @@ public class UserController {
     public ResponseEntity<String> updateProfile(@CurrentUser Viewer viewer, @Valid @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
         userService.updateProfile(viewer, userUpdateRequestDTO);
         return ResponseEntity.ok("Successfully updated");
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<ViewerResponseDTO> getCurrentViewer(@CurrentUser Viewer viewer) {
+        ViewerResponseDTO dto = ViewerResponseDTO.builder()
+                .id(viewer.getId())
+                .username(viewer.getUsername())
+                .build();
+        return ResponseEntity.ok(dto);
     }
 }

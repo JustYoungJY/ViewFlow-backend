@@ -7,6 +7,7 @@ import app.viewflowbackend.DTO.compilation.CompilationListItemDTO;
 import app.viewflowbackend.DTO.compilation.CompilationResponseDTO;
 import app.viewflowbackend.DTO.compilation.CompilationUpdateRequestDTO;
 import app.viewflowbackend.DTO.compilationMedia.CompilationMediaAddRequestDTO;
+import app.viewflowbackend.DTO.compilationMedia.CompilationMediaUpdateRequestDTO;
 import app.viewflowbackend.DTO.tag.TagResponseDTO;
 import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.exceptions.alreadyExists.AlreadyLikedException;
@@ -172,6 +173,49 @@ public class CompilationService {
 
         compilation.setMediaCount(compilation.getMediaCount() + 1);
         compilationRepository.save(compilation);
+        compilationMediaRepository.save(cm);
+    }
+
+
+    @Transactional
+    public void updateMediaInCompilation(Viewer viewer, Long compilationId, CompilationMediaUpdateRequestDTO dto) throws PermissionDeniedException {
+        Compilation compilation = compilationRepository.findById(compilationId)
+                .orElseThrow(() -> new CompilationNotFoundException(compilationId));
+
+        if (!viewer.getId().equals(compilation.getViewer().getId())) {
+            throw new PermissionDeniedException("Not owner");
+        }
+
+        CompilationMediaPK pk = new CompilationMediaPK(compilationId, dto.getMediaId(), dto.getMediaType());
+        CompilationMedia cm = compilationMediaRepository.findById(pk)
+                .orElseThrow(() -> new RuntimeException("Media not found in compilation"));
+
+        if (dto.getOrderIndex() != null) {
+            Integer oldIndex = cm.getOrderIndex();
+            Integer newIndex = dto.getOrderIndex();
+
+            if (!oldIndex.equals(newIndex)) {
+                // First, set the current item to a temporary negative index to avoid conflicts
+                cm.setOrderIndex(-1);
+                compilationMediaRepository.save(cm);
+
+                if (newIndex < oldIndex) {
+                    // moving up
+                    compilationMediaRepository.shiftIndicesDown(compilationId, newIndex, oldIndex);
+                } else {
+                    // moving down
+                    compilationMediaRepository.shiftIndicesUp(compilationId, oldIndex, newIndex);
+                }
+
+                // Now set the final index
+                cm.setOrderIndex(newIndex);
+            }
+        }
+
+        if (dto.getAuthorDescription() != null) {
+            cm.setAuthorDescription(dto.getAuthorDescription());
+        }
+
         compilationMediaRepository.save(cm);
     }
 

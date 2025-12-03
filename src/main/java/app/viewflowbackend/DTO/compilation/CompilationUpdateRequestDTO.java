@@ -2,6 +2,7 @@ package app.viewflowbackend.DTO.compilation;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,6 @@ public class CompilationUpdateRequestDTO {
     @Size(min = 1, max = 512, message = "Описание должно быть длиной от 1 до 512 символов")
     private String description;
 
-    @NotBlank(message = "Настройки публичности не могут быть пустыми")
+    @NotNull(message = "Настройки публичности не могут быть пустыми")
     private Boolean isPublic;
 }

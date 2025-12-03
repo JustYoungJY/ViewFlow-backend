@@ -317,7 +317,7 @@ public class TmdbService {
             }
 
             List<Map<String, Object>> results = (List<Map<String, Object>>) data.get("results");
-            if (results.isEmpty()) {
+            if (results == null || results.isEmpty()) {
                 return new ArrayList<>();
             }
 
@@ -349,7 +349,7 @@ public class TmdbService {
             }
 
             List<Map<String, Object>> secondResults = (List<Map<String, Object>>) secondData.get("results");
-            if (secondResults.isEmpty()) {
+            if (secondResults == null || secondResults.isEmpty()) {
                 return new ArrayList<>();
             }
 
@@ -365,7 +365,7 @@ public class TmdbService {
                                 .mediaType(MediaType.TV)
                                 .title(result.get("name").toString())
                                 .releaseYear(releaseYear)
-                                .posterUrl(result.get("poster_path").toString())
+                                .posterUrl(result.get("poster_path") != null ? result.get("poster_path").toString() : null)
                                 .build()
                 );
             }

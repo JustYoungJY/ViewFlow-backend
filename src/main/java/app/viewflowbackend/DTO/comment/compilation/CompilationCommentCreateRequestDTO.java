@@ -2,6 +2,7 @@ package app.viewflowbackend.DTO.comment.compilation;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,6 @@ public class CompilationCommentCreateRequestDTO {
     @Size(min = 1, max = 512, message = "Комментарий должен быть длиной от 1 до 512 символов")
     private String content;
 
-    @NotBlank(message = "Id подборки не может быть пустым")
+    @NotNull(message = "Id подборки не может быть пустым")
     private Long compilationId;
 }

@@ -5,6 +5,7 @@ import app.viewflowbackend.DTO.compilation.CompilationListItemDTO;
 import app.viewflowbackend.DTO.compilation.CompilationResponseDTO;
 import app.viewflowbackend.DTO.compilation.CompilationUpdateRequestDTO;
 import app.viewflowbackend.DTO.compilationMedia.CompilationMediaAddRequestDTO;
+import app.viewflowbackend.DTO.compilationMedia.CompilationMediaUpdateRequestDTO;
 import app.viewflowbackend.annotations.CurrentUser;
 import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.models.basic.Viewer;
@@ -67,6 +68,13 @@ public class CompilationController {
     public ResponseEntity<Void> addMediaToCompilation(@CurrentUser Viewer viewer, @PathVariable Long id,
                                                       @Valid @RequestBody CompilationMediaAddRequestDTO dto) {
         compilationService.addMediaToCompilation(viewer, id, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/media")
+    public ResponseEntity<Void> patchMediaInCompilation(@CurrentUser Viewer viewer, @PathVariable Long id,
+                                                        @RequestBody CompilationMediaUpdateRequestDTO dto) {
+        compilationService.updateMediaInCompilation(viewer, id, dto);
         return ResponseEntity.ok().build();
     }
 
