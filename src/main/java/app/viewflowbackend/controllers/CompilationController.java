@@ -86,9 +86,14 @@ public class CompilationController {
     }
 
     @PostMapping("/{id}/like")
-    public ResponseEntity<Void> likeCompilation(@CurrentUser Viewer viewer, @PathVariable Long id) {
-        compilationService.likeCompilation(viewer, id);
+    public ResponseEntity<Void> toggleCompilationLike(@CurrentUser Viewer viewer, @PathVariable Long id) {
+        compilationService.toggleCompilationLike(viewer, id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/status")
+    public ResponseEntity<Boolean> isCompilationLiked(@CurrentUser Viewer viewer, @PathVariable Long id) {
+        return ResponseEntity.ok(compilationService.isCompilationLiked(viewer, id));
     }
 
     @GetMapping("/like")
@@ -100,11 +105,5 @@ public class CompilationController {
     @GetMapping("/user")
     public ResponseEntity<List<CompilationListItemDTO>> getUserCompilations(@CurrentUser Viewer viewer) {
         return ResponseEntity.ok(compilationService.getUserCompilations(viewer));
-    }
-
-    @DeleteMapping("/{id}/like")
-    public ResponseEntity<Void> unlikeCompilation(@CurrentUser Viewer viewer, @PathVariable Long id) {
-        compilationService.unlikeCompilation(viewer, id);
-        return ResponseEntity.noContent().build();
     }
 }

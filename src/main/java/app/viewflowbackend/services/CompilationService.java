@@ -106,6 +106,12 @@ public class CompilationService {
 
         CompilationResponseDTO response = modelMapper.map(compilation, CompilationResponseDTO.class);
         response.setMedia(media);
+
+        List<String> tagNames = compilation.getTags().stream()
+                .map(tag -> tag.getTag().getName())
+                .toList();
+        response.setTags(tagNames);
+
         return response;
     }
 
@@ -237,6 +243,61 @@ public class CompilationService {
 
 
     @Transactional
+    public void toggleCompilationLike(Viewer viewer, Long compilationId) {
+        Compilation compilation = compilationRepository.findById(compilationId)
+                .orElseThrow(() -> new CompilationNotFoundException(compilationId));
+
+        CompilationLikePK pk = new CompilationLikePK(compilationId, viewer.getId());
+
+        if (compilationLikeRepository.existsById(pk)) {
+            // Unlike
+            compilationLikeRepository.deleteById(pk);
+            compilation.setLikesCount(compilation.getLikesCount() - 1);
+        } else {
+            // Like
+            CompilationLike like = CompilationLike
+                    .builder()
+                    .id(pk)
+                    .compilation(compilation)
+                    .viewer(viewer)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            compilationLikeRepository.save(like);
+            compilation.setLikesCount(compilation.getLikesCount() + 1);
+        }
+
+        compilationRepository.save(compilation);
+    }
+
+    public boolean isCompilationLiked(Viewer viewer, Long compilationId) {
+        compilationRepository.findById(compilationId)
+                .orElseThrow(() -> new CompilationNotFoundException(compilationId));
+
+        CompilationLikePK pk = new CompilationLikePK(compilationId, viewer.getId());
+        return compilationLikeRepository.existsById(pk);
+    }
+
+
+    public Page<CompilationListItemDTO> getLikedCompilations(Viewer viewer, Pageable pageable) {
+        Page<CompilationLike> listLiked = compilationLikeRepository.findByViewerId(viewer.getId(), pageable);
+        Page<Compilation> compilations = listLiked.map(like ->
+                compilationRepository.findById(like.getCompilation().getId()).orElse(null));
+
+        return compilations.map(this::mapToListItem);
+    }
+
+    public List<CompilationListItemDTO> getUserCompilations(Viewer viewer) {
+        Page<Compilation> compilations = compilationRepository.findAll(
+                CompilationSpecifications.byViewerId(viewer.getId()),
+                Pageable.unpaged());
+        return compilations.stream()
+                .map(this::mapToListItem)
+                .toList();
+    }
+
+
+    @Transactional
     public void likeCompilation(Viewer viewer, Long compilationId) throws PermissionDeniedException {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
@@ -257,24 +318,6 @@ public class CompilationService {
         compilationLikeRepository.save(like);
         compilation.setLikesCount(compilation.getLikesCount() + 1);
         compilationRepository.save(compilation);
-    }
-
-
-    public Page<CompilationListItemDTO> getLikedCompilations(Viewer viewer, Pageable pageable) {
-        Page<CompilationLike> listLiked = compilationLikeRepository.findByViewerId(viewer.getId(), pageable);
-        Page<Compilation> compilations = listLiked.map(like ->
-                compilationRepository.findById(like.getCompilation().getId()).orElse(null));
-
-        return compilations.map(this::mapToListItem);
-    }
-
-    public List<CompilationListItemDTO> getUserCompilations(Viewer viewer) {
-        Page<Compilation> compilations = compilationRepository.findAll(
-                CompilationSpecifications.byViewerId(viewer.getId()),
-                Pageable.unpaged());
-        return compilations.stream()
-                .map(this::mapToListItem)
-                .toList();
     }
 
 

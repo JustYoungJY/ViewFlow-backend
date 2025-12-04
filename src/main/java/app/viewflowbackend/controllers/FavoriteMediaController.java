@@ -35,11 +35,16 @@ public class FavoriteMediaController {
 
 
     @GetMapping("/status")
-    public ResponseEntity<FavoriteMediaResponseDTO> getFavorite(@CurrentUser Viewer viewer,
-                                                                @RequestParam Long mediaId,
-                                                                @RequestParam MediaType mediaType
+    public ResponseEntity<Boolean> getFavorite(@CurrentUser Viewer viewer,
+                                               @RequestParam Long mediaId,
+                                               @RequestParam MediaType mediaType
     ) {
-        return ResponseEntity.ok(favoriteMediaService.getFavoriteMedia(viewer, mediaId, mediaType));
+        try {
+            favoriteMediaService.getFavoriteMedia(viewer, mediaId, mediaType);
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
     }
 
 
