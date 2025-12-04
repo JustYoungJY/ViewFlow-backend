@@ -47,6 +47,8 @@ public class MediaDetailsDTO {
 
     private Integer numberOfSeasons;
 
+    private Integer numberOfEpisodes;
+
     private String country;
 
     private String budget;
@@ -54,5 +56,4 @@ public class MediaDetailsDTO {
     private List<String> directors;
 
     private MediaRatingResponseDTO ratings;
-
 }

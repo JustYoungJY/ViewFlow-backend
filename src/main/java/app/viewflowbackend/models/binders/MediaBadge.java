@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "media_badge")
@@ -21,5 +22,6 @@ public class MediaBadge {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "badge_id", nullable = false)
+    @ToString.Exclude
     private Badge badge;
 }

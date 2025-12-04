@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -26,5 +27,6 @@ public class Tag {
     private String name;
 
     @OneToMany(mappedBy = "tag")
+    @ToString.Exclude
     private List<CompilationTag> compilationTags;
 }

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,7 @@ public class FavoriteMedia {
     @ManyToOne
     @MapsId("viewerId")
     @JoinColumn(name = "viewer_id")
+    @ToString.Exclude
     private Viewer viewer;
 
     @Column(name = "added_at")

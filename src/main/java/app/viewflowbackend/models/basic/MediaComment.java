@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +25,7 @@ public class MediaComment {
 
     @ManyToOne
     @JoinColumn(name = "viewer_id")
+    @ToString.Exclude
     private Viewer viewer;
 
     @Column(name = "media_id")

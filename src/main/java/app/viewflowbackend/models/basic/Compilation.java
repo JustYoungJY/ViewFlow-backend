@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,17 +52,22 @@ public class Compilation {
 
     @ManyToOne
     @JoinColumn(name = "viewer_id")
+    @ToString.Exclude
     private Viewer viewer;
 
     @OneToMany(mappedBy = "compilation")
+    @ToString.Exclude
     private List<CompilationMedia> compilationMedia;
 
     @OneToMany(mappedBy = "compilation")
+    @ToString.Exclude
     private List<CompilationLike> likes;
 
     @OneToMany(mappedBy = "compilation")
+    @ToString.Exclude
     private List<CompilationTag> tags;
 
     @OneToMany(mappedBy = "compilation")
+    @ToString.Exclude
     private List<CompilationComment> comments;
 }

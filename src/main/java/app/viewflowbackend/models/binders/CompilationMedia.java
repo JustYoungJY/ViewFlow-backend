@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,7 @@ public class CompilationMedia {
     @ManyToOne
     @MapsId("compilationId")
     @JoinColumn(name = "compilation_id")
+    @ToString.Exclude
     private Compilation compilation;
 
     @Column(name = "order_index")

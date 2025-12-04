@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -26,11 +27,13 @@ public class CompilationLike {
     @MapsId("compilationId")
     @ManyToOne
     @JoinColumn(name = "compilation_id")
+    @ToString.Exclude
     private Compilation compilation;
 
     @MapsId("viewerId")
     @ManyToOne
     @JoinColumn(name = "viewer_id")
+    @ToString.Exclude
     private Viewer viewer;
 
     @Column(name = "created_at")

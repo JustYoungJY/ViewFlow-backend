@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "compilation_tag")
@@ -24,11 +25,13 @@ public class CompilationTag {
     @MapsId("tagId")
     @ManyToOne
     @JoinColumn(name = "tag_id")
+    @ToString.Exclude
     private Tag tag;
 
     @MapsId("compilationId")
     @ManyToOne
     @JoinColumn(name = "compilation_id")
+    @ToString.Exclude
     private Compilation compilation;
 
 }

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,20 +55,26 @@ public class Viewer {
     private Role role;
 
     @OneToMany(mappedBy = "viewer")
+    @ToString.Exclude
     private List<Compilation> compilations;
 
     @OneToMany(mappedBy = "viewer")
+    @ToString.Exclude
     private List<CompilationComment> compilationComments;
 
     @OneToMany(mappedBy = "viewer")
+    @ToString.Exclude
     private List<FavoriteMedia> favoriteMedia;
 
     @OneToMany(mappedBy = "viewer")
+    @ToString.Exclude
     private List<MediaComment> mediaComments;
 
     @OneToMany(mappedBy = "viewer")
+    @ToString.Exclude
     private List<WatchedMedia> watchedMedia;
 
     @OneToMany(mappedBy = "viewer")
+    @ToString.Exclude
     private List<CompilationLike> compilationLikes;
 }

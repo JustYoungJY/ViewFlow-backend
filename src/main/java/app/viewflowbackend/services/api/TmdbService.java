@@ -148,6 +148,7 @@ public class TmdbService {
                         (data.get("episode_run_time") != null && !((List<Integer>) data.get("episode_run_time")).isEmpty() ?
                                 ((List<Integer>) data.get("episode_run_time")).get(0) : null))
                 .numberOfSeasons(type == MediaType.TV ? (Integer) data.get("number_of_seasons") : null)
+                .numberOfEpisodes(type == MediaType.TV ? (Integer) data.get("number_of_episodes") : null)
                 .country(
                         data.get("production_countries") != null && !((List<Map>) data.get("production_countries")).isEmpty() ?
                                 (String) ((List<Map>) data.get("production_countries")).get(0).get("name") : ""
