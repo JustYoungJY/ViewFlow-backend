@@ -42,4 +42,8 @@ public class CompilationSpecifications {
         String likePattern = "%" + title.toLowerCase() + "%";
         return (root, query, cb) -> cb.like(cb.lower(root.get("title")), likePattern);
     }
+
+    public static Specification<Compilation> byViewerId(Long viewerId) {
+        return (root, query, cb) -> cb.equal(root.get("viewer").get("id"), viewerId);
+    }
 }

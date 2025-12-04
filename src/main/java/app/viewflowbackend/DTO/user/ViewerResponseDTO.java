@@ -14,4 +14,6 @@ public class ViewerResponseDTO {
     private Long id;
 
     private String username;
+
+    private String avatarUrl;
 }

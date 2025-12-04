@@ -2,7 +2,6 @@ package app.viewflowbackend.DTO.compilationMedia;
 
 
 import app.viewflowbackend.enums.MediaType;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

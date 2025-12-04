@@ -97,6 +97,11 @@ public class CompilationController {
         return ResponseEntity.ok(compilationService.getLikedCompilations(viewer, pageable));
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<List<CompilationListItemDTO>> getUserCompilations(@CurrentUser Viewer viewer) {
+        return ResponseEntity.ok(compilationService.getUserCompilations(viewer));
+    }
+
     @DeleteMapping("/{id}/like")
     public ResponseEntity<Void> unlikeCompilation(@CurrentUser Viewer viewer, @PathVariable Long id) {
         compilationService.unlikeCompilation(viewer, id);

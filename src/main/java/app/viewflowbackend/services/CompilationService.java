@@ -268,6 +268,15 @@ public class CompilationService {
         return compilations.map(this::mapToListItem);
     }
 
+    public List<CompilationListItemDTO> getUserCompilations(Viewer viewer) {
+        Page<Compilation> compilations = compilationRepository.findAll(
+                CompilationSpecifications.byViewerId(viewer.getId()),
+                Pageable.unpaged());
+        return compilations.stream()
+                .map(this::mapToListItem)
+                .toList();
+    }
+
 
     @Transactional
     public void unlikeCompilation(Viewer viewer, Long compilationId) {

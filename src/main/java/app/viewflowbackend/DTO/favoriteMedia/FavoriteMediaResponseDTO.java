@@ -1,6 +1,7 @@
 package app.viewflowbackend.DTO.favoriteMedia;
 
 
+import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
 import app.viewflowbackend.enums.MediaType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -22,4 +23,6 @@ public class FavoriteMediaResponseDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime addedAt;
+
+    private MediaDetailsDTO mediaDetails;
 }

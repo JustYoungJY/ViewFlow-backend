@@ -73,6 +73,7 @@ public class FavoriteMediaService {
                 .mediaId(favorite.getId().getMediaId())
                 .mediaType(favorite.getId().getMediaType())
                 .addedAt(favorite.getAddedAt())
+                .mediaDetails(tmdbService.getMediaDetails(favorite.getId().getMediaId(), favorite.getId().getMediaType()))
                 .build()
         );
     }

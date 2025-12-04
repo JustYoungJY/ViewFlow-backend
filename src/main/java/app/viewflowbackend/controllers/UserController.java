@@ -43,6 +43,7 @@ public class UserController {
         ViewerResponseDTO dto = ViewerResponseDTO.builder()
                 .id(viewer.getId())
                 .username(viewer.getUsername())
+                .avatarUrl(viewer.getAvatarUrl())
                 .build();
         return ResponseEntity.ok(dto);
     }
