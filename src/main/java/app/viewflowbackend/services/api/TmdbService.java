@@ -1,9 +1,6 @@
 package app.viewflowbackend.services.api;
 
-import app.viewflowbackend.DTO.api.GenreDTO;
-import app.viewflowbackend.DTO.api.MediaCardResponseDTO;
-import app.viewflowbackend.DTO.api.MediaCarouselResponseDTO;
-import app.viewflowbackend.DTO.api.MediaRatingResponseDTO;
+import app.viewflowbackend.DTO.api.*;
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
 import app.viewflowbackend.DTO.auxiliary.MediaSelectionDTO;
 import app.viewflowbackend.DTO.auxiliary.TmdbMediaIdDTO;
@@ -15,6 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -378,6 +377,32 @@ public class TmdbService {
         }
 
     }
+
+
+    public List<CountryDTO> getCountries() {
+        try {
+            ClassPathResource resource = new ClassPathResource("countries.json");
+
+            List<Map<String, Object>> countries = objectMapper.readValue(
+                    resource.getInputStream(),
+                    new TypeReference<>() {}
+            );
+
+            Collections.sort(countries, Comparator.comparing(country -> (String) country.get("country")));
+
+            return countries.stream().map(c -> CountryDTO
+                    .builder()
+                    .id((Integer) c.get("id"))
+                    .country((String) c.get("country"))
+                    .build()).toList();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+
+
 
     // TODO: Write method for searching cast
 

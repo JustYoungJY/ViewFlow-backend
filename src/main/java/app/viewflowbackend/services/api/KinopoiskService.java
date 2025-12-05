@@ -1,14 +1,19 @@
 package app.viewflowbackend.services.api;
 
+import app.viewflowbackend.DTO.api.MediaCardResponseDTO;
 import app.viewflowbackend.DTO.api.MediaRatingResponseDTO;
 import app.viewflowbackend.DTO.api.RandomMediaCardRequestDTO;
 import app.viewflowbackend.DTO.api.RandomMediaResponseCardDTO;
 import app.viewflowbackend.DTO.auxiliary.MediaDetailsDTO;
 import app.viewflowbackend.DTO.auxiliary.TmdbMediaIdDTO;
+import app.viewflowbackend.enums.MediaType;
 import app.viewflowbackend.exceptions.api.InvalidResponseFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,10 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class KinopoiskService {
@@ -291,6 +293,76 @@ public class KinopoiskService {
                     .build();
         } catch (NullPointerException e) {
             return null;
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new InvalidResponseFormatException(e.getMessage());
+        }
+    }
+
+
+    public Page<MediaCardResponseDTO> getFilteredListMedia(Integer countryId, Integer genreId, String order,
+                                                           MediaType mediaType,
+                                                           Integer ratingFrom, Integer ratingTo, Integer yearFrom,
+                                                           Integer yearTo, Pageable pageable) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-API-KEY", apiKey);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+
+        // https://kinopoiskapiunofficial.tech/api/v2.2/films?countries=1&genres=17&order=RATING&type=FILM&ratingFrom=7&ratingTo=9&yearFrom=2000&yearTo=2020&page=1
+        String baseUrl = "https://kinopoiskapiunofficial.tech/api/v2.2/films?" + "ratingFrom=" + ratingFrom + "&ratingTo=" + ratingTo + "&yearFrom=" + yearFrom
+                + "&yearTo=" + yearTo + (countryId != null ? "&countries=" + countryId : "") + (genreId != null ? "&genres=" + genreId : "")
+                + (order != null ? "&order=" + order : "") + "&page=" + (pageable.getPageNumber() + 1);
+
+        if(mediaType == MediaType.MOVIE){
+            baseUrl += "&type=FILM";
+        }else{
+            baseUrl += "&type=TV_SERIES";
+        }
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    baseUrl,
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+
+            Map data = response.getBody();
+
+            if (data == null) {
+                throw new InvalidResponseFormatException("Неверный формат ответа от Kinopoisk API");
+            }
+
+            if (data.get("items") == null || ((List<Map<String, Object>>) data.get("items")).isEmpty()) {
+                return Page.empty();
+            }
+
+            Integer totalItems = (Integer) data.get("total");
+
+            List<MediaCardResponseDTO> responseList = new ArrayList<>();
+            List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
+            for (Map<String, Object> item : items) {
+                try {
+                    String imdbId = (String) item.get("imdbId");
+                    TmdbMediaIdDTO tmdbMediaIdDTO = tmdbService.getTmdbMediaIdAndMediaTypeByImdbId(imdbId);
+                    MediaDetailsDTO mediaDetailsDTO = tmdbService.getMediaDetails(tmdbMediaIdDTO.getMediaId(), tmdbMediaIdDTO.getMediaType());
+
+                    responseList.add(MediaCardResponseDTO
+                            .builder()
+                            .mediaId(tmdbMediaIdDTO.getMediaId())
+                            .mediaType(tmdbMediaIdDTO.getMediaType())
+                            .title(mediaDetailsDTO.getTitle())
+                            .posterUrl(mediaDetailsDTO.getPosterPath())
+                            .year(mediaDetailsDTO.getReleaseYear())
+                            .genres(mediaDetailsDTO.getGenres())
+                            .rating(mediaDetailsDTO.getVoteAverage())
+                            .build());
+                } catch (NullPointerException e) {
+                    continue;
+                }
+            }
+            
+            return new PageImpl<>(responseList, pageable, totalItems != null ? totalItems : responseList.size());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new InvalidResponseFormatException(e.getMessage());
         }

@@ -8,6 +8,8 @@ import app.viewflowbackend.enums.RandomType;
 import app.viewflowbackend.services.api.KinopoiskService;
 import app.viewflowbackend.services.api.TmdbService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,5 +85,25 @@ public class MediaController {
     @GetMapping("/selection")
     public ResponseEntity<List<MediaSelectionDTO>> getSelectionMedia(@RequestParam String query) {
         return ResponseEntity.ok(tmdbService.getMediaSelection(query));
+    }
+
+    @GetMapping("/countries")
+    public ResponseEntity<List<CountryDTO>> getCountries() {
+        return ResponseEntity.ok(tmdbService.getCountries());
+    }
+
+
+    @GetMapping("/filtered")
+    public ResponseEntity<Page<MediaCardResponseDTO>> getFilteredMediaCard(@RequestParam(required = false) Integer countryId,
+                                                                           @RequestParam(required = false) Integer genreId,
+                                                                           @RequestParam(required = false) String order,
+                                                                           @RequestParam(required = false) MediaType mediaType,
+                                                                           @RequestParam Integer ratingFrom,
+                                                                           @RequestParam Integer ratingTo,
+                                                                           @RequestParam Integer yearFrom,
+                                                                           @RequestParam Integer yearTo,
+                                                                            Pageable pageable) {
+        return ResponseEntity.ok(kinopoiskService.getFilteredListMedia(countryId, genreId, order, mediaType, ratingFrom,
+                ratingTo, yearFrom, yearTo, pageable));
     }
 }
