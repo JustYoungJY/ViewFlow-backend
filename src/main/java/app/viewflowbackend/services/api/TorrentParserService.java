@@ -13,8 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,7 +65,8 @@ public class TorrentParserService {
                 int seeds = 0;
                 try {
                     seeds = Integer.parseInt(cols.get(2).text());
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
 
 
                 Element magnetElement = cols.get(5).selectFirst("a");
@@ -100,8 +99,6 @@ public class TorrentParserService {
                 .sorted(Comparator.comparingInt(TorrentOptionDTO::getSeeds).reversed())
                 .collect(Collectors.toList());
     }
-
-
 
 
     private boolean isValidQuality(String title) {

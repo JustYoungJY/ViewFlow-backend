@@ -3,11 +3,7 @@ package app.viewflowbackend.models.binders;
 import app.viewflowbackend.id.MediaBadgePK;
 import app.viewflowbackend.models.basic.Badge;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Table(name = "media_badge")

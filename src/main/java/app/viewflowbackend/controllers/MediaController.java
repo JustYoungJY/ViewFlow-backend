@@ -102,7 +102,7 @@ public class MediaController {
                                                                            @RequestParam Integer ratingTo,
                                                                            @RequestParam Integer yearFrom,
                                                                            @RequestParam Integer yearTo,
-                                                                            Pageable pageable) {
+                                                                           Pageable pageable) {
         return ResponseEntity.ok(kinopoiskService.getFilteredListMedia(countryId, genreId, order, mediaType, ratingFrom,
                 ratingTo, yearFrom, yearTo, pageable));
     }

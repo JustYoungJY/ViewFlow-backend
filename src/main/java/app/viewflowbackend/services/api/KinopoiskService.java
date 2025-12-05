@@ -313,9 +313,9 @@ public class KinopoiskService {
                 + "&yearTo=" + yearTo + (countryId != null ? "&countries=" + countryId : "") + (genreId != null ? "&genres=" + genreId : "")
                 + (order != null ? "&order=" + order : "") + "&page=" + (pageable.getPageNumber() + 1);
 
-        if(mediaType == MediaType.MOVIE){
+        if (mediaType == MediaType.MOVIE) {
             baseUrl += "&type=FILM";
-        }else{
+        } else {
             baseUrl += "&type=TV_SERIES";
         }
 
@@ -361,7 +361,7 @@ public class KinopoiskService {
                     continue;
                 }
             }
-            
+
             return new PageImpl<>(responseList, pageable, totalItems != null ? totalItems : responseList.size());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new InvalidResponseFormatException(e.getMessage());

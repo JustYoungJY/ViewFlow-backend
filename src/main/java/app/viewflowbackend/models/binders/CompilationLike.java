@@ -5,11 +5,7 @@ import app.viewflowbackend.id.CompilationLikePK;
 import app.viewflowbackend.models.basic.Compilation;
 import app.viewflowbackend.models.basic.Viewer;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 

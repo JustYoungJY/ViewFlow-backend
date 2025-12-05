@@ -7,11 +7,7 @@ import app.viewflowbackend.models.binders.FavoriteMedia;
 import app.viewflowbackend.models.binders.WatchedMedia;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -4,11 +4,7 @@ package app.viewflowbackend.models.binders;
 import app.viewflowbackend.id.CompilationMediaPK;
 import app.viewflowbackend.models.basic.Compilation;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 

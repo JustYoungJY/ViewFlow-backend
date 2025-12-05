@@ -12,8 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -385,7 +383,8 @@ public class TmdbService {
 
             List<Map<String, Object>> countries = objectMapper.readValue(
                     resource.getInputStream(),
-                    new TypeReference<>() {}
+                    new TypeReference<>() {
+                    }
             );
 
             Collections.sort(countries, Comparator.comparing(country -> (String) country.get("country")));
@@ -400,8 +399,6 @@ public class TmdbService {
             return Collections.emptyList();
         }
     }
-
-
 
 
     // TODO: Write method for searching cast
