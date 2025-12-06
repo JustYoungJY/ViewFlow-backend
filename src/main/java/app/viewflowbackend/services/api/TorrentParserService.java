@@ -30,7 +30,8 @@ public class TorrentParserService {
 
     public List<TorrentOptionDTO> getSeriesSeasonTorrents(String seriesTitle, int seasonNumber) {
         String query = seriesTitle + " " + seasonNumber + " сезон";
-        String queryUrl = buildSearchUrl(query);
+        String hyphenatedQuery = query.trim().replace(" ", "-");
+        String queryUrl = buildSearchUrl(hyphenatedQuery);
         return parseAndFilter(queryUrl);
     }
 
@@ -103,13 +104,15 @@ public class TorrentParserService {
 
     private boolean isValidQuality(String title) {
         String lower = title.toLowerCase();
-        return lower.contains("bdrip") || lower.contains("hdrip");
+        return lower.contains("bdrip") || lower.contains("hdrip") || lower.contains("web-dl") || lower.contains("webrip");
     }
 
     private String extractQuality(String title) {
         String lower = title.toLowerCase();
         if (lower.contains("bdrip")) return "BDRip";
         if (lower.contains("hdrip")) return "HDRip";
+        if (lower.contains("web-dl")) return "WEB-DL";
+        if (lower.contains("webrip")) return "WEBRip";
         return "Unknown";
     }
 

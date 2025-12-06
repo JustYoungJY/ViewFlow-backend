@@ -23,6 +23,8 @@ public class MediaDetailsDTO {
 
     private MediaType mediaType;
 
+    private Long kinopoiskId;
+
     private String title;
 
     private String originalTitle;

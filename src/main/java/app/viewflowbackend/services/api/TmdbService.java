@@ -122,11 +122,18 @@ public class TmdbService {
         }
         Double averageRating = Math.round((sumOfRatings / countOfRatings) * 10.0) / 10.0;
 
+        Long kinopoiskId;
+        try {
+            kinopoiskId = kinopoiskService.getKinopoiskIdByImdbId(getImdbId(id, type));
+        } catch (Exception e) {
+            kinopoiskId = null;
+        }
 
         MediaDetailsDTO dto = MediaDetailsDTO
                 .builder()
                 .tmdbId(id)
                 .mediaType(type)
+                .kinopoiskId(kinopoiskId)
                 .title(data.get("title") != null ? (String) data.get("title") : (String) data.get("name"))
                 .originalTitle(data.get("original_title") != null ? (String) data.get("original_title") : (String) data.get("original_name"))
                 .posterPath((String) data.get("poster_path"))
